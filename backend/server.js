@@ -9,7 +9,13 @@ app.use(express.json());
 
 // Routes
 const apodRoute = require('./routes/apod');
-app.use('/apod', apodRoute);
+const epicRoute = require('./routes/epic');
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.use('/apod', apodRoute);
+app.use('/epic', epicRoute);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log('NASA API Key:', process.env.NASA_API_KEY ? 'Is set' : 'Not set');
+});
