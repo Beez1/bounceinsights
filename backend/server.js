@@ -13,12 +13,14 @@ const epicRoute = require('./routes/epic');
 const explainRoute = require('./routes/explain');
 const weatherSummaryRoute = require('./routes/weatherSummary');
 const contextualizeRoute = require('./routes/contextualize');
+const emailBriefingRoute = require('./routes/emailBriefing');
 
 app.use('/apod', apodRoute);
 app.use('/epic', epicRoute);
 app.use('/explain', explainRoute);
 app.use('/weather-summary', weatherSummaryRoute);
 app.use('/contextualize', contextualizeRoute);
+app.use('/email-briefing', emailBriefingRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

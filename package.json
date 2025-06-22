@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "express-rate-limit": "^7.5.0",
+    "nodemailer": "^7.0.3",
+    "nodemailer-sendgrid-transport": "^0.2.0",
     "openai": "^5.5.1"
   }
 }
