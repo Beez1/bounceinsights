@@ -1,63 +1,42 @@
-import { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { useState } from 'react';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
-// Replace with your Mapbox token
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
-const MapPicker = ({ 
-  initialLocation = { lat: 0, lng: 0 },
-  onLocationSelect,
-  height = "400px"
-}) => {
-  const mapContainer = useRef(null);
-  const map = useRef(null);
-  const marker = useRef(null);
-  const [location, setLocation] = useState(initialLocation);
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 
-  useEffect(() => {
-    if (map.current) return;
+function LocationMarker({ onSelect }) {
+  const [position, setPosition] = useState(null);
 
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/satellite-v9',
-      center: [location.lng, location.lat],
-      zoom: 2
-    });
+  useMapEvents({
+    click(e) {
+      setPosition(e.latlng);
+      onSelect(e.latlng);
+    },
+  });
 
-    marker.current = new mapboxgl.Marker({
-      draggable: true
-    })
-      .setLngLat([location.lng, location.lat])
-      .addTo(map.current);
+  return position ? <Marker position={position} /> : null;
+}
 
-    marker.current.on('dragend', () => {
-      const lngLat = marker.current.getLngLat();
-      setLocation({ lat: lngLat.lat, lng: lngLat.lng });
-      onLocationSelect?.({ lat: lngLat.lat, lng: lngLat.lng });
-    });
-
-    map.current.on('click', (e) => {
-      const { lng, lat } = e.lngLat;
-      marker.current.setLngLat([lng, lat]);
-      setLocation({ lat, lng });
-      onLocationSelect?.({ lat, lng });
-    });
-
-    return () => {
-      map.current?.remove();
-      map.current = null;
-    };
-  }, []);
-
+export default function MapPicker({ onLocationSelect }) {
   return (
-    <div className="rounded-lg overflow-hidden border border-white/10">
-      <div ref={mapContainer} style={{ height }} />
-      <div className="bg-black/20 backdrop-blur-sm p-3 text-sm text-white/70">
-        Latitude: {location.lat.toFixed(4)}, Longitude: {location.lng.toFixed(4)}
-      </div>
+    <div className="h-64 w-full rounded-lg overflow-hidden">
+      <MapContainer center={[20, 0]} zoom={2} style={{ height: '100%', width: '100%' }}>
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
+        />
+        <LocationMarker onSelect={onLocationSelect} />
+      </MapContainer>
     </div>
   );
-};
-
-export default MapPicker; 
+} 

@@ -20,22 +20,24 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 
 router.get('/', async (req, res) => {
   try {
-    const { date: userInputDate = '01-06-2021', lat, lon, radius = 1000 } = req.query;
+    const { date: userInputDate, lat, lon, radius = 1000 } = req.query;
     
-    // Validate date format
-    if (!/^\d{2}-\d{2}-\d{4}$/.test(userInputDate)) {
+    if (!userInputDate) {
       return res.status(400).json({ 
-        error: 'Invalid date format', 
-        details: 'Date must be in DD-MM-YYYY format' 
+        error: 'Date is required', 
+        details: 'Please provide a date in YYYY-MM-DD format.' 
       });
     }
 
-    // Convert DD-MM-YYYY to YYYY-MM-DD for NASA API
-    const dateParts = userInputDate.split('-');
-    const day = dateParts[0];
-    const month = dateParts[1];
-    const year = dateParts[2];
-    const nasaApiDate = `${year}-${month}-${day}`;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(userInputDate)) {
+      return res.status(400).json({ 
+        error: 'Invalid date format', 
+        details: 'Date must be in YYYY-MM-DD format.' 
+      });
+    }
+
+    const [year, month, day] = userInputDate.split('-');
+    const nasaApiDate = userInputDate;
 
     // Validate lat/lon if provided
     if ((lat && !lon) || (!lat && lon)) {

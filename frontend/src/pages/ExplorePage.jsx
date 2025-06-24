@@ -1,57 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Tab } from '@headlessui/react';
 import { CalendarIcon, GlobeAltIcon, ClockIcon } from '@heroicons/react/24/outline';
-import ImageCard from '../components/ImageCard';
-import MapPicker from '../components/MapPicker';
-import Loader from '../components/Loader';
-import ErrorAlert from '../components/ErrorAlert';
 import { useApi } from '../hooks/useApi';
+import EpicViewPage from './EpicViewPage';
 
 const tabs = [
   { name: 'Astronomy', icon: CalendarIcon, endpoint: '/apod' },
-  { name: 'Earth View', icon: GlobeAltIcon, endpoint: '/epic' },
-  { name: 'Time Travel', icon: ClockIcon, endpoint: '/time-travel' },
+  { name: 'Earth View', icon: GlobeAltIcon },
+  { name: 'Time Travel', icon: ClockIcon },
 ];
 
 export default function ExplorePage() {
-  const [viewMode, setViewMode] = useState('grid');
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [location, setLocation] = useState({ lat: 34.0522, lon: -118.2437 }); // Default to LA
   const [activeTab, setActiveTab] = useState(0);
-
-  const endpoint = tabs[activeTab].endpoint;
-  const params = {
-    date: selectedDate.toISOString().split('T')[0],
-    ...(location && { lat: location.lat, lon: location.lon }),
-  };
-
-  const { data, loading, error } = useApi(endpoint, params);
-
-  const renderContent = () => {
-    if (loading) {
-      return <Loader />;
-    }
-    if (error) {
-      return <ErrorAlert message={`Failed to fetch data. ${error.message}`} />;
-    }
-    if (!data || (Array.isArray(data) && data.length === 0)) {
-      return (
-        <div className="text-center text-white/60 py-12">
-          <p>No images found for the selected criteria.</p>
-          <p className="text-sm mt-2">Try adjusting the date or location.</p>
-        </div>
-      );
-    }
-    
-    const items = Array.isArray(data) ? data : [data];
-    return (
-      <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'gap-4'}`}>
-        {items.map((item, index) => (
-          <ImageCard key={item.identifier || index} {...item} />
-        ))}
-      </div>
-    );
-  };
+  const currentTab = tabs[activeTab];
+  const { data, loading, error } = useApi(currentTab.endpoint || null);
 
   return (
     <div className="container mx-auto px-4 py-12 mt-16">
@@ -63,30 +25,6 @@ export default function ExplorePage() {
             <p className="mt-2 text-white/70">
               Discover amazing imagery from NASA's archives and satellites
             </p>
-          </div>
-          
-          {/* View Mode Toggle */}
-          <div className="flex items-center space-x-2 bg-white/5 rounded-lg p-1">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`px-3 py-1.5 rounded ${
-                viewMode === 'grid' 
-                  ? 'bg-white/10 text-white' 
-                  : 'text-white/70 hover:text-white'
-              }`}
-            >
-              Grid
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-3 py-1.5 rounded ${
-                viewMode === 'list' 
-                  ? 'bg-white/10 text-white' 
-                  : 'text-white/70 hover:text-white'
-              }`}
-            >
-              List
-            </button>
           </div>
         </div>
 
@@ -111,49 +49,39 @@ export default function ExplorePage() {
             ))}
           </Tab.List>
 
-          {/* Filters */}
-          <div className="space-y-4 mb-8">
-            <div className="flex flex-wrap gap-4">
-              {/* Date Picker */}
-              <div className="glass-effect rounded-lg p-4 flex-1">
-                <label className="block text-sm font-medium text-white/70 mb-2">
-                  Select Date
-                </label>
-                <input
-                  type="date"
-                  value={selectedDate.toISOString().split('T')[0]}
-                  onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                  className="bg-white/5 text-white rounded-lg p-2 w-full"
-                />
-              </div>
-
-              {/* Location Filter */}
-              <div className="glass-effect rounded-lg p-4 flex-1">
-                <label className="block text-sm font-medium text-white/70 mb-2">
-                  Location
-                </label>
-                <MapPicker onLocationSelect={setLocation} />
-              </div>
-            </div>
-
-            {/* Timeline Slider */}
-            <div className="glass-effect rounded-lg p-4">
-              <label className="block text-sm font-medium text-white/70 mb-2">
-                Time Period
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                className="w-full"
-              />
-            </div>
-          </div>
-
           <Tab.Panels className="mt-2">
-            <Tab.Panel>{renderContent()}</Tab.Panel>
-            <Tab.Panel>{renderContent()}</Tab.Panel>
-            <Tab.Panel>{renderContent()}</Tab.Panel>
+            <Tab.Panel>
+              <div className="text-center text-white/60 py-12">
+                {loading ? (
+                  <p>Loading...</p>
+                ) : error ? (
+                  <p className="text-red-500">Failed to load APOD: {error.message}</p>
+                ) : data ? (
+                  <div className="text-white max-w-3xl mx-auto space-y-4">
+                    <h2 className="text-2xl font-bold">{data.title}</h2>
+                    <p className="text-sm text-white/60">{data.date}</p>
+                    {data.media_type === 'image' && (
+                      <img
+                        src={data.url}
+                        alt={data.title}
+                        className="rounded-lg shadow-lg w-full max-w-2xl mx-auto"
+                      />
+                    )}
+                    <p className="text-white/80">{data.explanation}</p>
+                  </div>
+                ) : (
+                  <p>No APOD data found.</p>
+                )}
+              </div>
+            </Tab.Panel>
+            <Tab.Panel>
+              <EpicViewPage />
+            </Tab.Panel>
+            <Tab.Panel>
+              <div className="text-center text-white/60 py-12">
+                <p>Time Travel content will be shown here.</p>
+              </div>
+            </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
       </div>

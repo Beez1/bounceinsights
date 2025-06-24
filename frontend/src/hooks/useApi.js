@@ -1,46 +1,44 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: 'https://bounceinsights.onrender.com',
-});
+import api from '../api';
 
 const cache = new Map();
 
-export const useApi = (endpoint, params = {}, trigger = true) => {
+export const useApi = (endpoint, params = {}) => {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async () => {
-    const cacheKey = `${endpoint}?${new URLSearchParams(params).toString()}`;
-    
-    if (cache.has(cacheKey)) {
-      setData(cache.get(cacheKey));
+  useEffect(() => {
+    if (!endpoint) {
+      setLoading(false);
+      setData(null);
       return;
     }
 
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await api.get(endpoint, { params });
-      cache.set(cacheKey, response.data);
-      setData(response.data);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
+    const controller = new AbortController();
+
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await api.get(endpoint, {
+          params,
+          signal: controller.signal,
+        });
+        setData(response.data);
+      } catch (err) {
+        if (err.name !== 'CanceledError') {
+          setError(err);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+    return () => controller.abort();
   }, [endpoint, JSON.stringify(params)]);
 
-  useEffect(() => {
-    if (trigger) {
-      fetchData();
-    }
-  }, [fetchData, trigger]);
-
-  return { data, loading, error, refetch: fetchData };
+  return { data, loading, error };
 };
 
 // Specific API call hooks can be defined here for cleaner use in components
