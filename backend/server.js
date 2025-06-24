@@ -14,6 +14,9 @@ const explainRoute = require('./routes/explain');
 const weatherSummaryRoute = require('./routes/weatherSummary');
 const contextualizeRoute = require('./routes/contextualize');
 const emailBriefingRoute = require('./routes/emailBriefing');
+const imageComparatorRoute = require('./routes/imageComparator');
+const timeTravelRoute = require('./routes/timeTravel');
+const searchRoute = require('./routes/search');
 
 app.use('/apod', apodRoute);
 app.use('/epic', epicRoute);
@@ -21,6 +24,9 @@ app.use('/explain', explainRoute);
 app.use('/weather-summary', weatherSummaryRoute);
 app.use('/contextualize', contextualizeRoute);
 app.use('/email-briefing', emailBriefingRoute);
+app.use('/image-comparator', imageComparatorRoute);
+app.use('/time-travel', timeTravelRoute);
+app.use('/search', searchRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

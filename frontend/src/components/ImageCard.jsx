@@ -1,0 +1,75 @@
+import { useState } from 'react';
+import { EyeIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+
+const ImageCard = ({ 
+  imageUrl, 
+  title, 
+  description, 
+  date,
+  onExplain,
+  onContextualize,
+  metadata = {}
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div 
+      className="relative group rounded-lg overflow-hidden bg-black/20 border border-white/10 backdrop-blur-sm"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="aspect-square relative">
+        <img 
+          src={imageUrl} 
+          alt={title}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        
+        {/* Hover Overlay */}
+        <div className={`absolute inset-0 bg-black/50 flex items-center justify-center gap-4 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+          {onExplain && (
+            <button
+              onClick={onExplain}
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <EyeIcon className="w-6 h-6 text-white" />
+            </button>
+          )}
+          {onContextualize && (
+            <button
+              onClick={onContextualize}
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <InformationCircleIcon className="w-6 h-6 text-white" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4 space-y-2">
+        <h3 className="text-lg font-semibold text-white">{title}</h3>
+        {date && (
+          <p className="text-sm text-white/70">{new Date(date).toLocaleDateString()}</p>
+        )}
+        {description && (
+          <p className="text-sm text-white/80 line-clamp-2">{description}</p>
+        )}
+        
+        {/* Metadata Display */}
+        {Object.entries(metadata).length > 0 && (
+          <div className="mt-3 pt-3 border-t border-white/10">
+            {Object.entries(metadata).map(([key, value]) => (
+              <div key={key} className="flex justify-between text-sm">
+                <span className="text-white/60">{key}:</span>
+                <span className="text-white/90">{value}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ImageCard; 
