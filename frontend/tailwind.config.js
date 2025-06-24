@@ -17,6 +17,7 @@ export default {
         inter: ['Inter', 'sans-serif'],
       },
       colors: {
+        'nasa-blue': '#0B3D91',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

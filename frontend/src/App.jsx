@@ -2,30 +2,20 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
-import SearchPage from './pages/SearchPage';
-import EpicPage from './pages/EpicPage';
-import ApodPage from './pages/ApodPage';
-import TimeTravelPage from './pages/TimeTravelPage';
-import ImageComparatorPage from './pages/ImageComparatorPage';
-import ExplainPage from './pages/ExplainPage';
-import WeatherPage from './pages/WeatherPage';
-import BriefingPage from './pages/BriefingPage';
+import ExplorePage from './pages/ExplorePage';
+import SearchAnalyzePage from './pages/SearchAnalyzePage';
+import WeatherContextPage from './pages/WeatherContextPage';
 
 const App = () => {
   return (
     <Router>
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
+      <div className="min-h-screen bg-background text-foreground">
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/epic" element={<EpicPage />} />
-          <Route path="/apod" element={<ApodPage />} />
-          <Route path="/time-travel" element={<TimeTravelPage />} />
-          <Route path="/compare" element={<ImageComparatorPage />} />
-          <Route path="/explain" element={<ExplainPage />} />
-          <Route path="/weather" element={<WeatherPage />} />
-          <Route path="/briefing" element={<BriefingPage />} />
+          <Route path="/explore" element={<ExplorePage />} />
+          <Route path="/search-analyze" element={<SearchAnalyzePage />} />
+          <Route path="/weather-context" element={<WeatherContextPage />} />
         </Routes>
         <Toaster position="bottom-right" />
       </div>

@@ -3,11 +3,9 @@ import { GlobeAltIcon } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Home', href: '/' },
-  { name: 'Search', href: '/search' },
-  { name: 'EPIC', href: '/epic' },
-  { name: 'APOD', href: '/apod' },
-  { name: 'Time Travel', href: '/time-travel' },
-  { name: 'Compare', href: '/compare' },
+  { name: 'Explore', href: '/explore' },
+  { name: 'Search & Analyze', href: '/search-analyze' },
+  { name: 'Weather & Context', href: '/weather-context' },
 ];
 
 export default function Navbar() {
