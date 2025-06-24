@@ -3,6 +3,7 @@ import { Tab } from '@headlessui/react';
 import { CalendarIcon, GlobeAltIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { useApi } from '../hooks/useApi';
 import EpicViewPage from './EpicViewPage';
+import TimeTravelPage from './TimeTravelPage';
 
 const tabs = [
   { name: 'Astronomy', icon: CalendarIcon, endpoint: '/apod' },
@@ -78,9 +79,7 @@ export default function ExplorePage() {
               <EpicViewPage />
             </Tab.Panel>
             <Tab.Panel>
-              <div className="text-center text-white/60 py-12">
-                <p>Time Travel content will be shown here.</p>
-              </div>
+              <TimeTravelPage />
             </Tab.Panel>
           </Tab.Panels>
         </Tab.Group>

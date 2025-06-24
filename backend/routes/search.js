@@ -4,7 +4,6 @@ const axios = require('axios');
 const { getCapital } = require('../utils/capitals');
 const { getHistoricalWeather } = require('../utils/weather');
 const { getNewsForCountry } = require('../utils/news');
-const { getAIExplanation } = require('../utils/explanation');
 require('dotenv').config();
 
 const router = express.Router();

@@ -10,7 +10,6 @@ app.use(express.json());
 // Routes
 const apodRoute = require('./routes/apod');
 const epicRoute = require('./routes/epic');
-const explainRoute = require('./routes/explain');
 const weatherSummaryRoute = require('./routes/weatherSummary');
 const contextualizeRoute = require('./routes/contextualize');
 const emailBriefingRoute = require('./routes/emailBriefing');
@@ -20,7 +19,6 @@ const searchRoute = require('./routes/search');
 
 app.use('/apod', apodRoute);
 app.use('/epic', epicRoute);
-app.use('/explain', explainRoute);
 app.use('/weather-summary', weatherSummaryRoute);
 app.use('/contextualize', contextualizeRoute);
 app.use('/email-briefing', emailBriefingRoute);

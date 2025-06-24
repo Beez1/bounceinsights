@@ -3,42 +3,52 @@ import api from '../api';
 
 const cache = new Map();
 
-export const useApi = (endpoint, params = {}) => {
+export const useApi = (endpoint, params = {}, trigger = true) => {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (!endpoint) {
-      setLoading(false);
-      setData(null);
+  const fetchData = useCallback(async () => {
+    const method = params.method || 'GET';
+    const body = params.body || {};
+    const getParams = method === 'GET' ? params : {};
+
+    const cacheKey = `${endpoint}?${new URLSearchParams(getParams).toString()}`;
+    
+    if (method === 'GET' && cache.has(cacheKey)) {
+      setData(cache.get(cacheKey));
       return;
     }
 
-    const controller = new AbortController();
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get(endpoint, {
-          params,
-          signal: controller.signal,
-        });
-        setData(response.data);
-      } catch (err) {
-        if (err.name !== 'CanceledError') {
-          setError(err);
-        }
-      } finally {
-        setLoading(false);
+    setLoading(true);
+    setError(null);
+    
+    try {
+      let response;
+      if (method === 'POST') {
+        response = await api.post(endpoint, body);
+      } else {
+        response = await api.get(endpoint, { params: getParams });
       }
-    };
-
-    fetchData();
-    return () => controller.abort();
+      
+      if (method === 'GET') {
+        cache.set(cacheKey, response.data);
+      }
+      setData(response.data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   }, [endpoint, JSON.stringify(params)]);
 
-  return { data, loading, error };
+  useEffect(() => {
+    if (trigger) {
+      fetchData();
+    }
+  }, [fetchData, trigger]);
+
+  return { data, loading, error, refetch: fetchData };
 };
 
 // Specific API call hooks can be defined here for cleaner use in components

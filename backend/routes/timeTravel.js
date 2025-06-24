@@ -266,31 +266,42 @@ async function fetchHistoricalSatelliteData(coordinates, dateRange) {
   }
 
   try {
-    const response = await apiClient.get('https://api.nasa.gov/planetary/earth/imagery', {
+    const response = await apiClient.get('https://api.nasa.gov/planetary/earth/assets', {
       params: {
         lon: coordinates.lon,
         lat: coordinates.lat,
-        date: dateRange.start,
-        dim: 0.10,
+        begin_date: dateRange.start,
+        end_date: dateRange.start, // Fetch for a single day
         api_key: NASA_API_KEY
       }
     });
+
+    if (response.data.count === 0) {
+      throw new Error('No satellite imagery available for this location/date');
+    }
+
+    const firstImage = response.data.results[0];
 
     return {
       type: 'satellite',
       source: 'NASA Earth Imagery',
       coordinates,
       dateRange,
-      imageUrl: response.data.url || response.request.res.responseUrl,
+      imageUrl: firstImage.url,
       metadata: {
-        date: dateRange.start,
-        cloudScore: Math.random() * 100,
-        resolution: '10m'
+        date: firstImage.date,
+        cloudScore: Math.random() * 100, // Placeholder as new API doesn't provide this directly
+        resolution: 'varies' // Placeholder
       }
     };
   } catch (error) {
-    if (error.response?.status === 404) {
-      throw new Error('No satellite imagery available for this location/date');
+    if (error.response) {
+      if (error.response.status === 404) {
+        throw new Error('No satellite imagery available for this location/date');
+      }
+      if (error.response.status >= 500) {
+        throw new Error('NASA API service is currently unavailable. Please try again later.');
+      }
     }
     throw new Error(`NASA API error: ${error.message}`);
   }

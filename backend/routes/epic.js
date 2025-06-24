@@ -19,25 +19,27 @@ const calculateDistance = (lat1, lon1, lat2, lon2) => {
 };
 
 router.get('/', async (req, res) => {
+  const { date: userInputDate, lat, lon, radius = 1000 } = req.query;
+
   try {
-    const { date: userInputDate, lat, lon, radius = 1000 } = req.query;
-    
+    // Validate that date is provided
     if (!userInputDate) {
       return res.status(400).json({ 
         error: 'Date is required', 
-        details: 'Please provide a date in YYYY-MM-DD format.' 
       });
     }
 
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(userInputDate)) {
+    // Validate DD-MM-YYYY format
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(userInputDate)) {
       return res.status(400).json({ 
         error: 'Invalid date format', 
-        details: 'Date must be in YYYY-MM-DD format.' 
+        details: 'Date must be in DD-MM-YYYY format' 
       });
     }
 
-    const [year, month, day] = userInputDate.split('-');
-    const nasaApiDate = userInputDate;
+    // Convert DD-MM-YYYY to YYYY-MM-DD for NASA API
+    const [day, month, year] = userInputDate.split('-');
+    const nasaApiDate = `${year}-${month}-${day}`;
 
     // Validate lat/lon if provided
     if ((lat && !lon) || (!lat && lon)) {

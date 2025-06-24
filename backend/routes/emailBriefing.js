@@ -3,7 +3,6 @@ const { detectCountries } = require('../utils/vision');
 const { getCapital } = require('../utils/capitals');
 const { getHistoricalWeather } = require('../utils/weather');
 const { getNewsForCountry } = require('../utils/news');
-const { getAIExplanation } = require('../utils/explanation');
 const { sendBriefingEmail } = require('../utils/email');
 
 const router = express.Router();
@@ -30,32 +29,28 @@ router.post('/', async (req, res) => {
     console.log(`Processing briefing for: ${countries.join(', ')}`);
     
     // --- Step 2: Fetch all data in parallel for maximum efficiency ---
-    const dataPromises = [
-      getAIExplanation(imageUrl),
-      ...countries.map(async (country) => {
-        const capitalInfo = getCapital(country);
-        if (!capitalInfo || !capitalInfo.iso2) {
-          console.warn(`Skipping ${country} for regional data due to missing capital or iso2 code.`);
-          return null;
-        }
+    const dataPromises = countries.map(async (country) => {
+      const capitalInfo = getCapital(country);
+      if (!capitalInfo || !capitalInfo.iso2) {
+        console.warn(`Skipping ${country} for regional data due to missing capital or iso2 code.`);
+        return null;
+      }
 
-        const [weather, news] = await Promise.all([
-          getHistoricalWeather(capitalInfo.lat, capitalInfo.lon, queryDate),
-          getNewsForCountry(capitalInfo.iso2)
-        ]);
-        
-        return { country, capital: capitalInfo.capital, weather, news };
-      })
-    ];
+      const [weather, news] = await Promise.all([
+        getHistoricalWeather(capitalInfo.lat, capitalInfo.lon, queryDate),
+        getNewsForCountry(capitalInfo.iso2)
+      ]);
+      
+      return { country, capital: capitalInfo.capital, weather, news };
+    });
 
-    const [aiExplanation, ...contextualDataResults] = await Promise.all(dataPromises);
-    const contextualData = contextualDataResults.filter(Boolean); // Filter out nulls from skipped countries
+    const contextualData = (await Promise.all(dataPromises)).filter(Boolean);
 
     // --- Step 3: Assemble and Send Email ---
     const briefingData = {
       imageUrl,
       date: queryDate,
-      aiExplanation,
+      aiExplanation: "AI analysis has been disabled for this feature.", // Placeholder
       contextualData
     };
     
