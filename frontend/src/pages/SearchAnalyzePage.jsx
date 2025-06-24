@@ -8,6 +8,8 @@ import {
 import SearchBar from '../components/SearchBar';
 import ImageCard from '../components/ImageCard';
 import Loader from '../components/Loader';
+import ErrorAlert from '../components/ErrorAlert';
+import { searchImages, explainImage, compareImages } from '../hooks/useApi';
 
 const tabs = [
   { name: 'Search', icon: MagnifyingGlassIcon },
@@ -17,8 +19,55 @@ const tabs = [
 
 export default function SearchAnalyzePage() {
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedImages, setSelectedImages] = useState([]);
+  const [error, setError] = useState(null);
+  
+  const [searchResults, setSearchResults] = useState([]);
+  const [explanation, setExplanation] = useState('');
+  const [comparisonResult, setComparisonResult] = useState(null);
+
+  const [imageToExplain, setImageToExplain] = useState(null);
+  const [imagesToCompare, setImagesToCompare] = useState([null, null]);
+
+  const handleSearch = async (query) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const results = await searchImages(query);
+      setSearchResults(results);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExplain = async () => {
+    if (!imageToExplain) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await explainImage(imageToExplain);
+      setExplanation(result.explanation);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCompare = async () => {
+    if (!imagesToCompare[0] || !imagesToCompare[1]) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await compareImages(imagesToCompare);
+      setComparisonResult(result);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-12 mt-16">
@@ -52,22 +101,26 @@ export default function SearchAnalyzePage() {
             ))}
           </Tab.List>
 
-          <Tab.Panels>
+          <Tab.Panels className="mt-2">
             {/* Search Panel */}
             <Tab.Panel>
               <div className="space-y-8">
                 <SearchBar 
-                  onSearch={setSearchQuery}
-                  placeholder="Search for Earth observations and events..."
+                  onSearch={handleSearch}
+                  placeholder="Search for Earth observations..."
                 />
-                
-                {loading ? (
-                  <Loader />
-                ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* Search Results */}
+                {loading && <Loader />}
+                {error && <ErrorAlert message={error} />}
+                {!loading && !error && searchResults.length === 0 && (
+                  <div className="text-center text-white/60 py-12">
+                    <p>Search for NASA imagery and data using natural language.</p>
                   </div>
                 )}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {searchResults.map((item, index) => (
+                    <ImageCard key={index} {...item} />
+                  ))}
+                </div>
               </div>
             </Tab.Panel>
 
@@ -99,7 +152,14 @@ export default function SearchAnalyzePage() {
                   <h3 className="text-lg font-semibold text-white mb-4">
                     AI Analysis
                   </h3>
-                  {/* Analysis content */}
+                  {loading && <Loader />}
+                  {error && <ErrorAlert message={error} />}
+                  {!loading && !explanation && (
+                    <div className="text-center text-white/60 py-12">
+                      <p>Upload an image to get an AI-powered explanation.</p>
+                    </div>
+                  )}
+                  {explanation && <p className="text-white bg-white/5 p-4 rounded-lg">{explanation}</p>}
                 </div>
               </div>
             </Tab.Panel>
@@ -131,7 +191,14 @@ export default function SearchAnalyzePage() {
                   <h3 className="text-lg font-semibold text-white mb-4">
                     Comparison Analysis
                   </h3>
-                  {/* Comparison content */}
+                  {loading && <Loader />}
+                  {error && <ErrorAlert message={error} />}
+                  {!loading && !comparisonResult && (
+                    <div className="text-center text-white/60 py-12">
+                      <p>Select two images to see a detailed comparison.</p>
+                    </div>
+                  )}
+                  {comparisonResult && <div className="text-white">{/* ... display comparison ... */}</div>}
                 </div>
               </div>
             </Tab.Panel>

@@ -1,143 +1,100 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: 'https://bounceinsights.onrender.com',
 });
 
-export const useApi = () => {
+const cache = new Map();
+
+export const useApi = (endpoint, params = {}, trigger = true) => {
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const request = useCallback(async (config) => {
+  const fetchData = useCallback(async () => {
+    const cacheKey = `${endpoint}?${new URLSearchParams(params).toString()}`;
+    
+    if (cache.has(cacheKey)) {
+      setData(cache.get(cacheKey));
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
-      const response = await api(config);
-      return response.data;
+      const response = await api.get(endpoint, { params });
+      cache.set(cacheKey, response.data);
+      setData(response.data);
     } catch (err) {
-      setError(err.response?.data?.message || err.message);
-      throw err;
+      setError(err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [endpoint, JSON.stringify(params)]);
 
-  return {
-    loading,
-    error,
-    request,
-  };
+  useEffect(() => {
+    if (trigger) {
+      fetchData();
+    }
+  }, [fetchData, trigger]);
+
+  return { data, loading, error, refetch: fetchData };
 };
 
-// Feature-specific hooks
-export const useApod = () => {
-  const { loading, error, request } = useApi();
+// Specific API call hooks can be defined here for cleaner use in components
 
-  const fetchApod = useCallback(async () => {
-    return request({ method: 'GET', url: '/apod' });
-  }, [request]);
-
-  return { loading, error, fetchApod };
+export const getApod = async (params) => {
+  const cacheKey = `/apod?${new URLSearchParams(params).toString()}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+  const response = await api.get('/apod', { params });
+  cache.set(cacheKey, response.data);
+  return response.data;
 };
 
-export const useEpic = () => {
-  const { loading, error, request } = useApi();
-
-  const fetchEpic = useCallback(async (date, lat, lon, radius) => {
-    return request({
-      method: 'GET',
-      url: '/epic',
-      params: { date, lat, lon, radius },
-    });
-  }, [request]);
-
-  return { loading, error, fetchEpic };
+export const getEpicImages = async (params) => {
+  const cacheKey = `/epic?${new URLSearchParams(params).toString()}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+  const response = await api.get('/epic', { params });
+  cache.set(cacheKey, response.data);
+  return response.data;
 };
 
-export const useSearch = () => {
-  const { loading, error, request } = useApi();
-
-  const search = useCallback(async (query) => {
-    return request({
-      method: 'POST',
-      url: '/search',
-      data: { query },
-    });
-  }, [request]);
-
-  return { loading, error, search };
+export const getTimeTravelImage = async (params) => {
+  const cacheKey = `/time-travel?${new URLSearchParams(params).toString()}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+  const response = await api.get('/time-travel', { params });
+  cache.set(cacheKey, response.data);
+  return response.data;
 };
 
-export const useExplain = () => {
-  const { loading, error, request } = useApi();
-
-  const explain = useCallback(async (imageUrl) => {
-    return request({
-      method: 'POST',
-      url: '/explain',
-      data: { imageUrl },
-    });
-  }, [request]);
-
-  return { loading, error, explain };
+export const searchImages = async (query) => {
+  const response = await api.post('/search', { query });
+  return response.data;
 };
 
-export const useWeatherSummary = () => {
-  const { loading, error, request } = useApi();
-
-  const getWeatherSummary = useCallback(async (imageUrl, date, countries) => {
-    return request({
-      method: 'POST',
-      url: '/weather-summary',
-      data: { imageUrl, date, countries },
-    });
-  }, [request]);
-
-  return { loading, error, getWeatherSummary };
+export const explainImage = async (imageUrl) => {
+  const response = await api.post('/explain', { imageUrl });
+  return response.data;
 };
 
-export const useTimeTravel = () => {
-  const { loading, error, request } = useApi();
-
-  const getTimeTravel = useCallback(async (location, range, dataTypes) => {
-    return request({
-      method: 'POST',
-      url: '/time-travel',
-      data: { location, range, dataTypes },
-    });
-  }, [request]);
-
-  return { loading, error, getTimeTravel };
+export const compareImages = async (imageUrls) => {
+  const response = await api.post('/compare', { imageUrls });
+  return response.data;
 };
 
-export const useComparator = () => {
-  const { loading, error, request } = useApi();
-
-  const compare = useCallback(async (images, type) => {
-    return request({
-      method: 'POST',
-      url: '/image-comparator',
-      data: { images, type },
-    });
-  }, [request]);
-
-  return { loading, error, compare };
+export const getWeatherSummary = async (location) => {
+  const response = await api.post('/weather', { location });
+  return response.data;
 };
 
-export const useBriefing = () => {
-  const { loading, error, request } = useApi();
+export const getContextualInfo = async (location) => {
+  const response = await api.post('/contextualize', { location });
+  return response.data;
+};
 
-  const sendBriefing = useCallback(async (imageUrl, email, date, countries) => {
-    return request({
-      method: 'POST',
-      url: '/email-briefing',
-      data: { imageUrl, email, date, countries },
-    });
-  }, [request]);
-
-  return { loading, error, sendBriefing };
+export const sendEmailBriefing = async (email, preferences) => {
+  const response = await api.post('/briefing', { email, preferences });
+  return response.data;
 }; 

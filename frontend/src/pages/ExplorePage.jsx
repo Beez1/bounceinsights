@@ -1,21 +1,57 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Tab } from '@headlessui/react';
 import { CalendarIcon, GlobeAltIcon, ClockIcon } from '@heroicons/react/24/outline';
 import ImageCard from '../components/ImageCard';
 import MapPicker from '../components/MapPicker';
 import Loader from '../components/Loader';
+import ErrorAlert from '../components/ErrorAlert';
+import { useApi } from '../hooks/useApi';
 
 const tabs = [
-  { name: 'Astronomy', icon: CalendarIcon },
-  { name: 'Earth View', icon: GlobeAltIcon },
-  { name: 'Time Travel', icon: ClockIcon },
+  { name: 'Astronomy', icon: CalendarIcon, endpoint: '/apod' },
+  { name: 'Earth View', icon: GlobeAltIcon, endpoint: '/epic' },
+  { name: 'Time Travel', icon: ClockIcon, endpoint: '/time-travel' },
 ];
 
 export default function ExplorePage() {
   const [viewMode, setViewMode] = useState('grid');
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [location, setLocation] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [location, setLocation] = useState({ lat: 34.0522, lon: -118.2437 }); // Default to LA
+  const [activeTab, setActiveTab] = useState(0);
+
+  const endpoint = tabs[activeTab].endpoint;
+  const params = {
+    date: selectedDate.toISOString().split('T')[0],
+    ...(location && { lat: location.lat, lon: location.lon }),
+  };
+
+  const { data, loading, error } = useApi(endpoint, params);
+
+  const renderContent = () => {
+    if (loading) {
+      return <Loader />;
+    }
+    if (error) {
+      return <ErrorAlert message={`Failed to fetch data. ${error.message}`} />;
+    }
+    if (!data || (Array.isArray(data) && data.length === 0)) {
+      return (
+        <div className="text-center text-white/60 py-12">
+          <p>No images found for the selected criteria.</p>
+          <p className="text-sm mt-2">Try adjusting the date or location.</p>
+        </div>
+      );
+    }
+    
+    const items = Array.isArray(data) ? data : [data];
+    return (
+      <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'gap-4'}`}>
+        {items.map((item, index) => (
+          <ImageCard key={item.identifier || index} {...item} />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="container mx-auto px-4 py-12 mt-16">
@@ -55,7 +91,7 @@ export default function ExplorePage() {
         </div>
 
         {/* Tabs */}
-        <Tab.Group>
+        <Tab.Group selectedIndex={activeTab} onChange={setActiveTab}>
           <Tab.List className="flex space-x-2 rounded-xl bg-white/5 p-1 mb-8">
             {tabs.map((tab) => (
               <Tab
@@ -114,39 +150,10 @@ export default function ExplorePage() {
             </div>
           </div>
 
-          <Tab.Panels>
-            {/* Astronomy Panel */}
-            <Tab.Panel>
-              {loading ? (
-                <Loader />
-              ) : (
-                <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'gap-4'}`}>
-                  {/* APOD Content */}
-                </div>
-              )}
-            </Tab.Panel>
-
-            {/* Earth View Panel */}
-            <Tab.Panel>
-              {loading ? (
-                <Loader />
-              ) : (
-                <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'gap-4'}`}>
-                  {/* EPIC Content */}
-                </div>
-              )}
-            </Tab.Panel>
-
-            {/* Time Travel Panel */}
-            <Tab.Panel>
-              {loading ? (
-                <Loader />
-              ) : (
-                <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'gap-4'}`}>
-                  {/* Time Travel Content */}
-                </div>
-              )}
-            </Tab.Panel>
+          <Tab.Panels className="mt-2">
+            <Tab.Panel>{renderContent()}</Tab.Panel>
+            <Tab.Panel>{renderContent()}</Tab.Panel>
+            <Tab.Panel>{renderContent()}</Tab.Panel>
           </Tab.Panels>
         </Tab.Group>
       </div>

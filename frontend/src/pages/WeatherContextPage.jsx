@@ -1,12 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CloudIcon, GlobeAltIcon, NewspaperIcon } from '@heroicons/react/24/outline';
 import MapPicker from '../components/MapPicker';
 import Loader from '../components/Loader';
+import ErrorAlert from '../components/ErrorAlert';
+import { getWeatherSummary, getContextualInfo } from '../hooks/useApi';
 
 export default function WeatherContextPage() {
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
+
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [weatherError, setWeatherError] = useState(null);
+
+  const [contextLoading, setContextLoading] = useState(false);
+  const [contextError, setContextError] = useState(null);
+  const [contextData, setContextData] = useState(null);
+
+  useEffect(() => {
+    if (location) {
+      const fetchAllData = async () => {
+        // Fetch Weather
+        setWeatherLoading(true);
+        setWeatherError(null);
+        try {
+          const weather = await getWeatherSummary(location);
+          setWeatherData(weather);
+        } catch (err) {
+          setWeatherError(err.message);
+        } finally {
+          setWeatherLoading(false);
+        }
+
+        // Fetch Context
+        setContextLoading(true);
+        setContextError(null);
+        try {
+          const context = await getContextualInfo(location);
+          setContextData(context);
+        } catch (err) {
+          setContextError(err.message);
+        } finally {
+          setContextLoading(false);
+        }
+      };
+      fetchAllData();
+    }
+  }, [location]);
 
   return (
     <div className="container mx-auto px-4 py-12 mt-16">
@@ -62,9 +102,14 @@ export default function WeatherContextPage() {
                 Weather Analysis
               </h3>
               
-              {loading ? (
-                <Loader />
-              ) : weatherData ? (
+              {weatherLoading && <Loader />}
+              {weatherError && <ErrorAlert message={weatherError} />}
+              {!weatherLoading && !weatherData && (
+                <div className="text-center text-white/60 py-12">
+                  <p>Select a location on the map to view weather analysis.</p>
+                </div>
+              )}
+              {weatherData && (
                 <div className="space-y-4">
                   {/* Weather Stats */}
                   <div className="grid grid-cols-2 gap-4">
@@ -102,10 +147,6 @@ export default function WeatherContextPage() {
                     {/* Forecast content */}
                   </div>
                 </div>
-              ) : (
-                <div className="text-center text-white/60 py-12">
-                  Select a location or upload an image to view weather data
-                </div>
               )}
             </div>
           </div>
@@ -118,9 +159,14 @@ export default function WeatherContextPage() {
                 Location Context
               </h3>
               
-              {loading ? (
-                <Loader />
-              ) : location ? (
+              {contextLoading && <Loader />}
+              {contextError && <ErrorAlert message={contextError} />}
+              {!contextLoading && !contextData && (
+                 <div className="text-center text-white/60 py-12">
+                   <p>Select a location to view contextual information and news.</p>
+                 </div>
+              )}
+              {contextData && (
                 <div className="space-y-6">
                   {/* Country Info */}
                   <div>
@@ -145,10 +191,6 @@ export default function WeatherContextPage() {
                     </h4>
                     {/* News items */}
                   </div>
-                </div>
-              ) : (
-                <div className="text-center text-white/60 py-12">
-                  Select a location to view contextual information
                 </div>
               )}
             </div>
