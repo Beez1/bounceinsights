@@ -36,13 +36,13 @@ export default function ExplorePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 mt-16">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="text-center sm:text-left mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white">Explore Space & Earth</h1>
-            <p className="mt-2 text-white/70">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Explore Space & Earth</h1>
+            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-white/70">
               Discover amazing imagery from NASA's archives and satellites
             </p>
           </div>
@@ -50,7 +50,7 @@ export default function ExplorePage() {
 
         {/* Tabs */}
         <Tab.Group selectedIndex={activeTab} onChange={setActiveTab}>
-          <Tab.List className="flex space-x-2 rounded-xl bg-white/5 p-1 mb-8">
+          <Tab.List className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 rounded-xl bg-white/5 p-1 mb-8">
             {tabs.map((tab) => (
               <Tab
                 key={tab.name}
@@ -71,15 +71,15 @@ export default function ExplorePage() {
 
           <Tab.Panels className="mt-2">
             <Tab.Panel>
-              <div className="text-center text-white/60 py-12">
+              <div className="text-center text-white/60 py-8 sm:py-12">
                 {loading ? (
                   <p>Loading...</p>
                 ) : error ? (
                   <p className="text-red-500">Failed to load APOD: {error.message}</p>
                 ) : data ? (
                   <div className="text-white max-w-3xl mx-auto space-y-4">
-                    <h2 className="text-2xl font-bold">{data.title}</h2>
-                    <p className="text-sm text-white/60">{data.date}</p>
+                    <h2 className="text-xl sm:text-2xl font-bold">{data.title}</h2>
+                    <p className="text-xs sm:text-sm text-white/60">{data.date}</p>
                     {data.media_type === 'image' && (
                       <img
                         src={data.url}
@@ -87,7 +87,7 @@ export default function ExplorePage() {
                         className="rounded-lg shadow-lg w-full max-w-2xl mx-auto"
                       />
                     )}
-                    <p className="text-white/80">{data.explanation}</p>
+                    <p className="text-white/80 text-sm sm:text-base">{data.explanation}</p>
                     <button
                       onClick={() => setIsEmailDialogOpen(true)}
                       className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

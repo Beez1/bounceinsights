@@ -43,20 +43,20 @@ const ImageCard = ({
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-2">
-        <h3 className="text-lg font-semibold text-white">{title}</h3>
+      <div className="p-3 sm:p-4 space-y-2">
+        <h3 className="text-base sm:text-lg font-semibold text-white">{title}</h3>
         {date && (
-          <p className="text-sm text-white/70">{new Date(date).toLocaleDateString()}</p>
+          <p className="text-xs sm:text-sm text-white/70">{new Date(date).toLocaleDateString()}</p>
         )}
         {description && (
-          <p className="text-sm text-white/80 line-clamp-2">{description}</p>
+          <p className="text-xs sm:text-sm text-white/80 line-clamp-2">{description}</p>
         )}
         
         {/* Metadata Display */}
         {Object.entries(metadata).length > 0 && (
-          <div className="mt-3 pt-3 border-t border-white/10">
+          <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-white/10">
             {Object.entries(metadata).map(([key, value]) => (
-              <div key={key} className="flex justify-between text-sm">
+              <div key={key} className="flex justify-between text-xs sm:text-sm">
                 <span className="text-white/60">{key}:</span>
                 <span className="text-white/90">{value}</span>
               </div>

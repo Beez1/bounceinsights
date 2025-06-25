@@ -61,9 +61,9 @@ export default function TimeTravelPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-end">
         <div>
-          <label htmlFor="city-select" className="block text-sm text-white/70 mb-1">Select a City</label>
+          <label htmlFor="city-select" className="block text-xs sm:text-sm text-white/70 mb-1">Select a City</label>
           <select
             id="city-select"
             value={location}
@@ -78,7 +78,7 @@ export default function TimeTravelPage() {
           </select>
         </div>
         <div>
-          <label htmlFor="date-input" className="block text-sm text-white/70 mb-1">Select a Date</label>
+          <label htmlFor="date-input" className="block text-xs sm:text-sm text-white/70 mb-1">Select a Date</label>
           <input
             id="date-input"
             type="date"
@@ -91,12 +91,12 @@ export default function TimeTravelPage() {
       <button
         onClick={handleFetch}
         disabled={loading}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors disabled:bg-gray-500"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg transition-colors disabled:bg-gray-500"
       >
         {loading ? 'Traveling...' : 'Time Travel'}
       </button>
 
-      <div className="mt-8 text-center">
+      <div className="mt-6 md:mt-8 text-center">
         {renderSatelliteImage()}
       </div>
     </div>

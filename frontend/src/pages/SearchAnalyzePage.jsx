@@ -205,19 +205,19 @@ export default function SearchAnalyzePage() {
           onClose={() => setViewingImage(null)} 
         />
       )}
-      <div className="container mx-auto px-4 py-12 mt-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white">Search & Analyze</h1>
-            <p className="mt-2 text-white/70">
+          <div className="text-center sm:text-left mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Search & Analyze</h1>
+            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-white/70">
               Search, analyze, and compare NASA imagery with AI-powered tools
             </p>
           </div>
 
           {/* Tabs */}
           <Tab.Group>
-            <Tab.List className="flex space-x-2 rounded-xl bg-white/5 p-1 mb-8">
+            <Tab.List className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 rounded-xl bg-white/5 p-1 mb-8">
               {tabs.map((tab) => (
                 <Tab
                   key={tab.name}
@@ -248,10 +248,10 @@ export default function SearchAnalyzePage() {
                   {error && <ErrorAlert message={error} />}
                   {/* AI Analysis Section */}
                   {analysis && !loading && (
-                    <div className="glass-effect rounded-xl p-6 mb-8">
-                      <h2 className="text-xl font-bold text-white mb-4">AI Analysis</h2>
+                    <div className="glass-effect rounded-xl p-4 sm:p-6 mb-8">
+                      <h2 className="text-lg sm:text-xl font-bold text-white mb-4">AI Analysis</h2>
                       <div 
-                        className="prose prose-invert max-w-none text-white/90"
+                        className="prose prose-sm sm:prose-base prose-invert max-w-none text-white/90"
                         dangerouslySetInnerHTML={{ __html: analysis.replace(/\n/g, '<br />') }} 
                       />
                     </div>
@@ -259,8 +259,8 @@ export default function SearchAnalyzePage() {
 
                   {/* Affected Locations Section */}
                   {queryAnalysis && queryAnalysis.locations && queryAnalysis.locations.length > 0 && !loading && (
-                    <div className="glass-effect rounded-xl p-6 mb-8">
-                      <h2 className="text-xl font-bold text-white mb-4">
+                    <div className="glass-effect rounded-xl p-4 sm:p-6 mb-8">
+                      <h2 className="text-lg sm:text-xl font-bold text-white mb-4">
                         Affected Locations
                       </h2>
                       <div className="flex flex-wrap gap-2">
@@ -274,15 +274,15 @@ export default function SearchAnalyzePage() {
                   )}
 
                   {!loading && !error && searchResults.length === 0 && !analysis && (
-                    <div className="text-center text-white/60 py-12">
-                      <p className="text-lg font-medium">Search for NASA imagery and data using natural language.</p>
-                      <p className="text-sm mt-2 mb-6">Or try one of these examples:</p>
-                      <div className="flex flex-wrap justify-center gap-3">
+                    <div className="text-center text-white/60 py-8 sm:py-12">
+                      <p className="text-base sm:text-lg font-medium">Search for NASA imagery and data using natural language.</p>
+                      <p className="text-xs sm:text-sm mt-2 mb-6">Or try one of these examples:</p>
+                      <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
                         {displayedHints.map(hint => (
                           <button
                             key={hint}
                             onClick={() => handleSearch(hint)}
-                            className="nasa-button-secondary"
+                            className="nasa-button-secondary text-xs sm:text-sm"
                           >
                             {hint}
                           </button>
@@ -290,7 +290,7 @@ export default function SearchAnalyzePage() {
                       </div>
                     </div>
                   )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                     {searchResults.map((item, index) => (
                       <ImageCard 
                         key={index} 
@@ -306,13 +306,13 @@ export default function SearchAnalyzePage() {
               {/* Explain Panel */}
               <Tab.Panel>
                 <div className="space-y-8">
-                  <div className="glass-effect rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4">
+                  <div className="glass-effect rounded-xl p-4 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-4">
                       Upload or Select an Image to Explain
                     </h3>
                     {uploadedImage ? (
                       <div className="relative">
-                        <img src={uploadedImage} alt="Uploaded for explanation" className="w-full h-auto max-h-96 object-contain rounded-lg" />
+                        <img src={uploadedImage} alt="Uploaded for explanation" className="w-full h-auto max-h-64 sm:max-h-96 object-contain rounded-lg" />
                         <button
                           onClick={() => {
                             setUploadedImage(null);
@@ -321,12 +321,12 @@ export default function SearchAnalyzePage() {
                           className="absolute top-2 right-2 p-1 bg-red-600/80 rounded-full hover:bg-red-500"
                           title="Remove Image"
                         >
-                          <XCircleIcon className="w-6 h-6 text-white" />
+                          <XCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </button>
                       </div>
                     ) : (
                       <div 
-                        className="border-2 border-dashed border-white/20 rounded-lg p-8 text-center"
+                        className="border-2 border-dashed border-white/20 rounded-lg p-6 sm:p-8 text-center"
                         onDrop={(e) => {
                           e.preventDefault();
                           if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -344,11 +344,11 @@ export default function SearchAnalyzePage() {
                         />
                         <button 
                           onClick={() => fileInputRef.current.click()}
-                          className="nasa-button"
+                          className="nasa-button text-sm sm:text-base"
                         >
                           Upload Image
                         </button>
-                        <p className="mt-2 text-sm text-white/60">
+                        <p className="mt-2 text-xs sm:text-sm text-white/60">
                           or drag and drop an image here
                         </p>
                       </div>
@@ -356,20 +356,20 @@ export default function SearchAnalyzePage() {
                   </div>
 
                   {/* AI Analysis Results */}
-                  <div className="glass-effect rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4">
+                  <div className="glass-effect rounded-xl p-4 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-4">
                       AI Analysis
                     </h3>
                     {loading && <Loader />}
                     {error && <ErrorAlert message={error} />}
                     {!loading && !explanation && (
-                      <div className="text-center text-white/60 py-12">
+                      <div className="text-center text-white/60 py-8 sm:py-12">
                         <p>Upload an image to get an AI-powered explanation.</p>
                       </div>
                     )}
                     {explanation && (
                       <div
-                        className="prose prose-invert max-w-none text-white/90 bg-white/5 p-4 rounded-lg"
+                        className="prose prose-sm sm:prose-base prose-invert max-w-none text-white/90 bg-white/5 p-3 sm:p-4 rounded-lg"
                         dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, '<br />') }}
                       />
                     )}
@@ -380,14 +380,14 @@ export default function SearchAnalyzePage() {
               {/* Compare Panel */}
               <Tab.Panel>
                 <div className="space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     {/* Image Selection Slots */}
                     {[0, 1].map((index) => {
                       const image = imagesToCompare[index];
                       return (
                         <div
                           key={index}
-                          className="glass-effect rounded-xl p-6 text-center h-96 flex flex-col justify-center items-center"
+                          className="glass-effect rounded-xl p-4 sm:p-6 text-center h-64 sm:h-96 flex flex-col justify-center items-center"
                         >
                           {image ? (
                             <div className="relative w-full h-full group">
@@ -400,17 +400,17 @@ export default function SearchAnalyzePage() {
                                   className="absolute top-2 right-2 p-1 bg-red-600/80 rounded-full hover:bg-red-500"
                                   title="Remove Image"
                                 >
-                                  <XCircleIcon className="w-6 h-6 text-white" />
+                                  <XCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                                 </button>
                               </div>
                             </div>
                           ) : (
                             <>
-                              <h3 className="text-lg font-semibold text-white mb-4">
+                              <h3 className="text-base sm:text-lg font-semibold text-white mb-4">
                                 {`Image ${index + 1}`}
                               </h3>
-                              <div className="border-2 border-dashed border-white/20 rounded-lg p-8 w-full flex-grow flex flex-col justify-center items-center">
-                                <p className="text-white/60">Select an image from the Search tab</p>
+                              <div className="border-2 border-dashed border-white/20 rounded-lg p-6 sm:p-8 w-full flex-grow flex flex-col justify-center items-center">
+                                <p className="text-white/60 text-sm sm:text-base">Select an image from the Search tab</p>
                               </div>
                             </>
                           )}
@@ -422,7 +422,7 @@ export default function SearchAnalyzePage() {
                   <div className="text-center">
                     <button 
                       onClick={handleCompare} 
-                      className="nasa-button"
+                      className="nasa-button text-sm sm:text-base"
                       disabled={imagesToCompare.length < 2 || loading}
                     >
                       {loading ? "Comparing..." : "Compare Images"}
@@ -430,20 +430,20 @@ export default function SearchAnalyzePage() {
                   </div>
 
                   {/* Comparison Results */}
-                  <div className="glass-effect rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4">
+                  <div className="glass-effect rounded-xl p-4 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-white mb-4">
                       Comparison Analysis
                     </h3>
                     {loading && <Loader />}
                     {error && <ErrorAlert message={error} />}
                     {!loading && !comparisonResult && (
-                      <div className="text-center text-white/60 py-12">
+                      <div className="text-center text-white/60 py-8 sm:py-12">
                         <p>Select two images to see a detailed comparison.</p>
                       </div>
                     )}
                     {comparisonResult && (
                       <div 
-                        className="prose prose-invert max-w-none text-white/90 bg-white/5 p-4 rounded-lg"
+                        className="prose prose-sm sm:prose-base prose-invert max-w-none text-white/90 bg-white/5 p-3 sm:p-4 rounded-lg"
                         dangerouslySetInnerHTML={{ __html: comparisonResult.replace(/\n/g, '<br />') }} 
                       />
                     )}

@@ -44,23 +44,23 @@ const ImageViewer = ({ imageUrl, onClose }) => {
       onClick={onClose}
     >
       <div 
-        className="relative max-w-4xl max-h-[90vh] w-full p-4"
+        className="relative max-w-4xl max-h-[90vh] w-full p-2 sm:p-4"
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image/modal content
       >
-        <div className="absolute top-4 right-4 flex gap-2">
+        <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex gap-2">
           <button
             onClick={handleDownload}
             className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             title="Download Image"
           >
-            <ArrowDownTrayIcon className="w-6 h-6 text-white" />
+            <ArrowDownTrayIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </button>
           <button
             onClick={onClose}
             className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             title="Close Viewer"
           >
-            <XMarkIcon className="w-6 h-6 text-white" />
+            <XMarkIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
           </button>
         </div>
         

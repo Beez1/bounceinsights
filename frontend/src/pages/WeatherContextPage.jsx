@@ -117,12 +117,12 @@ export default function WeatherContextPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12 mt-16">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Weather & Context</h1>
-          <p className="mt-2 text-white/70">
+        <div className="text-center sm:text-left mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Weather & Context</h1>
+          <p className="mt-1 sm:mt-2 text-sm sm:text-base text-white/70">
             Analyze weather patterns and get contextual information about locations
           </p>
         </div>
@@ -132,8 +132,8 @@ export default function WeatherContextPage() {
           {/* Left Column - Location Selection */}
           <div className="lg:col-span-1 space-y-6">
             {/* Location Picker */}
-            <div className="glass-effect rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <div className="glass-effect rounded-xl p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-4 flex items-center">
                 <GlobeAltIcon className="w-5 h-5 mr-2" />
                 Select Location
               </h3>
@@ -141,8 +141,8 @@ export default function WeatherContextPage() {
             </div>
 
             {/* Upload Section */}
-            <div className="glass-effect rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">
+            <div className="glass-effect rounded-xl p-4 sm:p-6">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-4">
                 Upload Satellite Image
               </h3>
               {uploadedImage ? (
@@ -158,17 +158,17 @@ export default function WeatherContextPage() {
                     className="absolute top-2 right-2 p-1 bg-red-600/80 rounded-full hover:bg-red-500"
                     title="Remove Image"
                   >
-                    <XCircleIcon className="w-6 h-6 text-white" />
+                    <XCircleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </button>
                   {detectedLocation && (
-                    <div className="mt-2 text-center text-sm text-white/80">
+                    <div className="mt-2 text-center text-xs sm:text-sm text-white/80">
                       Detected Location: <span className="font-semibold">{detectedLocation}</span>
                     </div>
                   )}
                 </div>
               ) : (
                 <div 
-                  className="border-2 border-dashed border-white/20 rounded-lg p-8 text-center"
+                  className="border-2 border-dashed border-white/20 rounded-lg p-6 sm:p-8 text-center"
                   onDrop={(e) => {
                     e.preventDefault();
                     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -186,11 +186,11 @@ export default function WeatherContextPage() {
                   />
                   <button 
                     onClick={() => fileInputRef.current.click()}
-                    className="nasa-button"
+                    className="nasa-button text-sm sm:text-base"
                   >
                     Upload Image
                   </button>
-                  <p className="mt-2 text-sm text-white/60">
+                  <p className="mt-2 text-xs sm:text-sm text-white/60">
                     or drag and drop an image here
                   </p>
                 </div>
@@ -200,8 +200,8 @@ export default function WeatherContextPage() {
 
           {/* Center Column - Weather Data */}
           <div className="lg:col-span-1">
-            <div className="glass-effect rounded-xl p-6 h-full">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <div className="glass-effect rounded-xl p-4 sm:p-6 h-full">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-4 flex items-center">
                 <CloudIcon className="w-5 h-5 mr-2" />
                 Weather Analysis
               </h3>
@@ -209,8 +209,8 @@ export default function WeatherContextPage() {
               {(loading || weatherLoading) && <Loader />}
               {weatherError && <ErrorAlert message={weatherError} />}
               {!weatherLoading && !weatherData && !loading && (
-                <div className="text-center text-white/60 py-12">
-                  <p>Select a location on the map or upload an image to view weather analysis.</p>
+                <div className="text-center text-white/60 py-8 sm:py-12">
+                  <p className="text-sm sm:text-base">Select a location on the map or upload an image to view weather analysis.</p>
                 </div>
               )}
               {weatherData && (
@@ -232,32 +232,32 @@ export default function WeatherContextPage() {
 
                     return (
                       <div className="space-y-4">
-                        <div className={`text-6xl text-center p-4 rounded-lg ${weatherVisuals.color}`}>
+                        <div className={`text-5xl sm:text-6xl text-center p-4 rounded-lg ${weatherVisuals.color}`}>
                           {weatherVisuals.emoji}
                         </div>
                         {/* Weather Stats */}
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-blue-400/10 rounded-lg p-4">
-                            <div className="text-sm text-white/70">Temperature</div>
-                            <div className="text-2xl font-semibold text-white">
+                        <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                          <div className="bg-blue-400/10 rounded-lg p-3 sm:p-4">
+                            <div className="text-xs sm:text-sm text-white/70">Temperature</div>
+                            <div className="text-xl sm:text-2xl font-semibold text-white">
                               {temp}°C
                             </div>
                           </div>
-                          <div className="bg-orange-400/10 rounded-lg p-4">
-                            <div className="text-sm text-white/70">UV Index</div>
-                            <div className="text-2xl font-semibold text-white">
+                          <div className="bg-orange-400/10 rounded-lg p-3 sm:p-4">
+                            <div className="text-xs sm:text-sm text-white/70">UV Index</div>
+                            <div className="text-xl sm:text-2xl font-semibold text-white">
                               {uv}
                             </div>
                           </div>
-                          <div className="bg-purple-400/10 rounded-lg p-4">
-                            <div className="text-sm text-white/70">Weather</div>
-                            <div className="text-xl font-semibold text-white">
+                          <div className="bg-purple-400/10 rounded-lg p-3 sm:p-4">
+                            <div className="text-xs sm:text-sm text-white/70">Weather</div>
+                            <div className="text-lg sm:text-xl font-semibold text-white">
                               {condition}
                             </div>
                           </div>
-                          <div className="bg-green-400/10 rounded-lg p-4">
-                            <div className="text-sm text-white/70">Country</div>
-                            <div className="text-xl font-semibold text-white">
+                          <div className="bg-green-400/10 rounded-lg p-3 sm:p-4">
+                            <div className="text-xs sm:text-sm text-white/70">Country</div>
+                            <div className="text-lg sm:text-xl font-semibold text-white">
                               {country}
                             </div>
                           </div>
@@ -279,8 +279,8 @@ export default function WeatherContextPage() {
 
           {/* Right Column - Contextual Info */}
           <div className="lg:col-span-1">
-            <div className="glass-effect rounded-xl p-6 h-full">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <div className="glass-effect rounded-xl p-4 sm:p-6 h-full">
+              <h3 className="text-base sm:text-lg font-semibold text-white mb-4 flex items-center">
                 <NewspaperIcon className="w-5 h-5 mr-2" />
                 Location Context
               </h3>
@@ -288,18 +288,18 @@ export default function WeatherContextPage() {
               {contextLoading && <Loader />}
               {contextError && <ErrorAlert message={contextError} />}
               {!contextLoading && !contextData && (
-                 <div className="text-center text-white/60 py-12">
-                   <p>Select a location to view contextual information and news.</p>
+                 <div className="text-center text-white/60 py-8 sm:py-12">
+                   <p className="text-sm sm:text-base">Select a location to view contextual information and news.</p>
                  </div>
               )}
               {contextData && (
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* Country Info */}
                   <div>
                     <h4 className="text-sm font-medium text-white/70 mb-2">
                       Country Information
                     </h4>
-                    <div className="bg-indigo-500/10 rounded-lg p-4 text-sm text-white">
+                    <div className="bg-indigo-500/10 rounded-lg p-3 sm:p-4 text-xs sm:text-sm text-white">
                       <p><strong>Country:</strong> {contextData.contextualData?.[0]?.country}</p>
                       <p><strong>Capital:</strong> {contextData.contextualData?.[0]?.capital}</p>
                     </div>
@@ -310,7 +310,7 @@ export default function WeatherContextPage() {
                     <h4 className="text-sm font-medium text-white/70 mb-2">
                       Capital City Weather
                     </h4>
-                    <div className="bg-sky-500/10 rounded-lg p-4 text-sm text-white">
+                    <div className="bg-sky-500/10 rounded-lg p-3 sm:p-4 text-xs sm:text-sm text-white">
                      {contextData.contextualData?.[0]?.weather}
                     </div>
                   </div>
@@ -322,7 +322,7 @@ export default function WeatherContextPage() {
                     </h4>
                     <ul className="space-y-2">
                       {contextData.contextualData?.[0]?.news.slice(0, 3).map((item, index) => (
-                        <li key={index} className="bg-teal-500/10 rounded-lg p-3 text-sm hover:bg-teal-500/20 transition-colors">
+                        <li key={index} className="bg-teal-500/10 rounded-lg p-2 sm:p-3 text-xs sm:text-sm hover:bg-teal-500/20 transition-colors">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-white font-medium">{item.title}</a>
                           <p className="text-white/60 text-xs">{item.source}</p>
                         </li>

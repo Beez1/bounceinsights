@@ -251,49 +251,40 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 py-12 mt-16">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
         {/* Hero Section */}
-        <FloatingElement className="text-center mb-20">
+        <FloatingElement className="text-center mb-16 md:mb-20">
           <div className="relative">
-            <h1 className="text-6xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-green-400 to-cyan-300 mb-6 tracking-tight">
+            <h1 className="text-5xl sm:text-6xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-green-400 to-cyan-300 mb-4 md:mb-6 tracking-tight">
               NASA Earth Insights
             </h1>
-            <div className="absolute -top-4 -right-4 md:-top-8 md:-right-8">
-              <div className="relative">
-                <GlobeAltIcon className="w-12 h-12 md:w-16 md:h-16 text-blue-400 animate-pulse" />
-                <div className="absolute inset-0 animate-ping">
-                  <GlobeAltIcon className="w-12 h-12 md:w-16 md:h-16 text-green-400 opacity-20" />
-                </div>
-              </div>
-            </div>
           </div>
           
           <FloatingElement delay={200}>
-            <p className="text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto mb-10 leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto mb-8 md:mb-10 leading-relaxed">
               Explore our <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400 font-semibold">living planet</span> through NASA's eyes. 
               Get insights, analyze changes, and understand <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 font-semibold">Earth's dynamics</span> with cutting-edge technology.
             </p>
           </FloatingElement>
 
           <FloatingElement delay={400}>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 justify-center items-center">
               <Link
                 to="/explore"
-                className="group relative bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 hover:from-blue-700 hover:via-cyan-600 hover:to-blue-700 text-white px-10 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl overflow-hidden"
+                className="group text-lg sm:text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400 hover:scale-105 transition-transform duration-300 inline-block"
               >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <GlobeAltIcon className="w-5 h-5" />
-                  Explore Earth
+                <span className="flex items-center justify-center gap-2">
+                  <GlobeAltIcon className="w-6 h-6 text-green-400" />
+                  <span className="group-hover:text-blue-200 transition-colors">Explore Earth</span>
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
               </Link>
               <Link
                 to="/search-analyze"
-                className="group bg-transparent border-2 border-green-400 hover:border-green-300 text-green-300 hover:text-white px-10 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:bg-green-400/10 backdrop-blur-sm"
+                className="group text-lg sm:text-xl font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 hover:scale-105 transition-transform duration-300 inline-block"
               >
                 <span className="flex items-center justify-center gap-2">
-                  <SparklesIcon className="w-5 h-5" />
-                  AI Analysis
+                  <SparklesIcon className="w-6 h-6 text-blue-400" />
+                  <span className="group-hover:text-cyan-200 transition-colors">AI Analysis</span>
                 </span>
               </Link>
             </div>
@@ -301,8 +292,8 @@ const HomePage = () => {
         </FloatingElement>
 
         {/* Stats Section */}
-        <FloatingElement delay={600} className="mb-20">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <FloatingElement delay={600} className="mb-16 md:mb-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {stats.map((stat, index) => {
               const colors = ['from-blue-500/20 to-cyan-500/20', 'from-green-500/20 to-emerald-500/20', 'from-orange-400/20 to-yellow-400/20', 'from-purple-500/20 to-pink-500/20'];
               const iconColors = ['text-blue-400', 'text-green-400', 'text-orange-400', 'text-purple-400'];
@@ -310,17 +301,17 @@ const HomePage = () => {
               return (
                 <div 
                   key={stat.name} 
-                  className={`group relative bg-gradient-to-br ${colors[index]} backdrop-blur-lg rounded-2xl p-6 border border-white/20 hover:border-white/40 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2`}
+                  className={`group relative bg-gradient-to-br ${colors[index]} backdrop-blur-lg rounded-2xl p-4 sm:p-6 border border-white/20 hover:border-white/40 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2`}
                   style={{ animationDelay: `${800 + index * 100}ms` }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="relative z-10 text-center">
-                    <stat.icon className={`w-8 h-8 ${iconColors[index]} mx-auto mb-3 group-hover:scale-110 transition-transform duration-300`} />
-                    <div className="text-4xl font-bold text-white mb-2 group-hover:text-blue-200 transition-colors duration-300">
+                    <stat.icon className={`w-7 h-7 sm:w-8 sm:h-8 ${iconColors[index]} mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-300`} />
+                    <div className="text-3xl sm:text-4xl font-bold text-white mb-1 sm:mb-2 group-hover:text-blue-200 transition-colors duration-300">
                       {stat.value}
                     </div>
-                    <div className="text-lg font-semibold text-blue-200 mb-1">{stat.name}</div>
-                    <div className="text-sm text-blue-300">{stat.description}</div>
+                    <div className="text-base sm:text-lg font-semibold text-blue-200 mb-1">{stat.name}</div>
+                    <div className="text-xs sm:text-sm text-blue-300">{stat.description}</div>
                   </div>
                 </div>
               );
@@ -329,18 +320,18 @@ const HomePage = () => {
         </FloatingElement>
 
         {/* Features Grid */}
-        <FloatingElement delay={1000} className="mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-green-400 to-cyan-300">
+        <FloatingElement delay={1000} className="mb-16 md:mb-20">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-3 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-green-400 to-cyan-300">
             Explore Our Features
           </h2>
-          <p className="text-center text-blue-200 mb-12 text-lg">9 powerful tools for Earth observation and space technology</p>
+          <p className="text-center text-blue-200 mb-8 sm:mb-12 text-base sm:text-lg">9 powerful tools for Earth observation and space technology</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {features.map((feature, index) => (
               <Link
                 key={feature.name}
                 to={feature.href}
-                className="group relative bg-black/30 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-white/40 transition-all duration-500 transform hover:scale-105 hover:-translate-y-3 overflow-hidden"
+                className="group relative bg-black/30 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-white/20 hover:border-white/40 transition-all duration-500 transform hover:scale-105 hover:-translate-y-3 overflow-hidden"
                 style={{ animationDelay: `${1200 + feature.delay}ms` }}
                 onMouseEnter={() => setHoveredFeature(index)}
                 onMouseLeave={() => setHoveredFeature(null)}
@@ -349,21 +340,21 @@ const HomePage = () => {
                 <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500`} />
                 
                 {/* Planetary orbit effect */}
-                <div className="absolute top-4 right-4 w-16 h-16 opacity-20 group-hover:opacity-40 transition-opacity duration-500">
+                <div className={`absolute top-4 right-4 w-12 h-12 sm:w-16 sm:h-16 opacity-20 group-hover:opacity-40 transition-opacity duration-500`}>
                   <div className="w-full h-full border border-white/30 rounded-full animate-spin" style={{ animationDuration: '20s' }}>
                     <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full" />
                   </div>
                 </div>
                 
                 {/* Icon with earth-themed gradient background */}
-                <div className={`relative w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} p-4 mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                <div className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${feature.color} p-3 sm:p-4 mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                   <feature.icon className="w-full h-full text-white drop-shadow-lg" />
                 </div>
                 
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-green-300 transition-all duration-300">
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-blue-300 group-hover:to-green-300 transition-all duration-300">
                   {feature.name}
                 </h3>
-                <p className="text-blue-200 group-hover:text-blue-100 transition-colors duration-300 leading-relaxed">
+                <p className="text-blue-200 group-hover:text-blue-100 transition-colors duration-300 leading-relaxed text-sm sm:text-base">
                   {feature.description}
                 </p>
                 
@@ -382,28 +373,28 @@ const HomePage = () => {
         </FloatingElement>
 
         {/* Backend Capabilities Section */}
-        <FloatingElement delay={1600} className="mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-purple-400 to-pink-300">
+        <FloatingElement delay={1600} className="mb-16 md:mb-20">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-3 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-purple-400 to-pink-300">
             Powered by Advanced Technology
           </h2>
-          <p className="text-center text-blue-200 mb-12 text-lg">Enterprise-grade backend capabilities driving our Earth insights platform</p>
+          <p className="text-center text-blue-200 mb-8 sm:mb-12 text-base sm:text-lg">Enterprise-grade backend capabilities driving our Earth insights platform</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {backendCapabilities.map((capability, index) => (
               <div
                 key={capability.title}
-                className="group relative bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:border-white/30 transition-all duration-500 transform hover:scale-105"
+                className="group relative bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-white/10 hover:border-white/30 transition-all duration-500 transform hover:scale-105"
                 style={{ animationDelay: `${1800 + index * 100}ms` }}
               >
-                <div className="flex items-start gap-4">
-                  <div className={`w-12 h-12 rounded-xl bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <capability.icon className={`w-6 h-6 ${capability.color}`} />
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-black/40 backdrop-blur-sm border border-white/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                    <capability.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${capability.color}`} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-200 transition-colors duration-300">
+                    <h3 className="text-base sm:text-lg font-bold text-white mb-1 sm:mb-2 group-hover:text-blue-200 transition-colors duration-300">
                       {capability.title}
                     </h3>
-                    <p className="text-blue-300 text-sm leading-relaxed">
+                    <p className="text-blue-300 text-sm sm:text-base leading-relaxed">
                       {capability.description}
                     </p>
                   </div>
@@ -415,11 +406,11 @@ const HomePage = () => {
 
         {/* About Section */}
         <FloatingElement delay={2000} className="text-center">
-          <div className="relative bg-gradient-to-r from-black/30 via-blue-900/30 to-black/30 backdrop-blur-xl rounded-3xl p-12 border border-white/20 overflow-hidden">
+          <div className="relative bg-gradient-to-r from-black/30 via-blue-900/30 to-black/30 backdrop-blur-xl rounded-3xl p-8 sm:p-12 border border-white/20 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-green-500/10 to-cyan-500/10" />
             
             {/* Orbital rings decoration */}
-            <div className="absolute top-6 left-6 w-24 h-24 opacity-20">
+            <div className="absolute top-4 left-4 sm:top-6 sm:left-6 w-20 h-20 sm:w-24 sm:h-24 opacity-20">
               <div className="w-full h-full border border-blue-300 rounded-full animate-spin" style={{ animationDuration: '30s' }}>
                 <div className="absolute inset-2 border border-green-300 rounded-full animate-spin" style={{ animationDuration: '20s', animationDirection: 'reverse' }} />
                 <div className="absolute inset-4 border border-cyan-300 rounded-full animate-spin" style={{ animationDuration: '15s' }} />
@@ -427,10 +418,10 @@ const HomePage = () => {
             </div>
             
             <div className="relative z-10">
-              <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-green-400 to-cyan-300 mb-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-green-400 to-cyan-300 mb-4 sm:mb-6">
                 Our Living Planet
               </h2>
-              <p className="text-blue-100 max-w-4xl mx-auto leading-relaxed text-lg">
+              <p className="text-blue-100 max-w-4xl mx-auto leading-relaxed text-base sm:text-lg">
                 Our platform harnesses the power of NASA's extensive Earth observation data combined with 
                 cutting-edge artificial intelligence to provide unprecedented insights into our planet's 
                 dynamics. From <span className="text-blue-300 font-semibold">ocean currents</span> to <span className="text-green-300 font-semibold">forest changes</span>, 
@@ -439,13 +430,13 @@ const HomePage = () => {
               </p>
               
               {/* Earth-themed decorative elements */}
-              <div className="flex justify-center mt-8 gap-4">
+              <div className="flex justify-center mt-6 sm:mt-8 gap-3 sm:gap-4">
                 {[...Array(7)].map((_, i) => {
                   const colors = ['bg-blue-400', 'bg-green-400', 'bg-cyan-400', 'bg-blue-300', 'bg-emerald-400', 'bg-teal-400', 'bg-blue-500'];
                   return (
                     <div
                       key={i}
-                      className={`w-3 h-3 rounded-full ${colors[i]} animate-pulse`}
+                      className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full ${colors[i]} animate-pulse`}
                       style={{ animationDelay: `${i * 200}ms` }}
                     />
                   );
