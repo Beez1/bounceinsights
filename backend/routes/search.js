@@ -93,7 +93,7 @@ router.post('/', async (req, res) => {
     if (!queryAnalysis.success) {
       return res.status(400).json({
         error: 'Query parsing failed',
-        details: queryAnalysis.error,
+        details: queryAnalysis.details || queryAnalysis.error,
         suggestions: [
           'Try including a specific location (e.g., "Europe", "Nigeria", "New York")',
           'Mention a time period (e.g., "2023", "last summer", "during 2020")',
@@ -146,6 +146,15 @@ router.post('/', async (req, res) => {
 
 // Parse natural language query using GPT-4
 async function parseNaturalLanguageQuery(query) {
+  if (!process.env.OPENAI_API_KEY) {
+    console.error('[Query Parser] Error: OPENAI_API_KEY is not configured.');
+    return {
+      success: false,
+      error: 'Service Configuration Error',
+      details: 'The OpenAI API key is missing from the backend environment. Please ensure the OPENAI_API_KEY is set in your .env file.'
+    };
+  }
+
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4",
@@ -187,7 +196,16 @@ Examples:
       max_tokens: 1000
     });
 
-    const parsed = JSON.parse(response.choices[0].message.content);
+    let content = response.choices[0].message.content;
+
+    // The model can sometimes wrap the JSON in markdown or add other text.
+    // This regex will find the JSON block.
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (jsonMatch && jsonMatch[0]) {
+      content = jsonMatch[0];
+    }
+
+    const parsed = JSON.parse(content);
     
     // Enhance locations with our database
     if (parsed.locations) {
@@ -639,48 +657,71 @@ async function generateOverallAnalysis(originalQuery, queryAnalysis, searchResul
   const dataSummary = validResults.map(result => {
     switch (result.source) {
       case 'satellite':
-        return `Satellite imagery: ${result.images?.length || 0} images from ${result.date}`;
+        return `Satellite imagery: ${result.images?.length || 0} images from ${result.date || 'various dates'}`;
       case 'weather':
-        return `Weather data: ${result.locations?.length || 0} locations with historical weather`;
+        return `Weather data: Historical weather available for ${result.locations?.length || 0} locations.`;
       case 'news':
-        return `News data: ${result.locations?.length || 0} regions with relevant news`;
+        return `News data: Found news articles for ${result.locations?.length || 0} regions.`;
       case 'historical':
-        return `Historical data: ${result.images?.length || 0} astronomical images`;
+        return `Historical data: ${result.images?.length || 0} astronomical images from NASA's APOD.`;
       default:
-        return `${result.source}: Available`;
+        return `${result.source}: Data is available.`;
     }
-  }).join('. ');
+  }).join('\\n- ');
 
-  const prompt = `Analyze this natural language search query and results:
+  const primaryEvent = queryAnalysis.events && queryAnalysis.events.length > 0
+    ? queryAnalysis.events[0].keywords.join(', ')
+    : 'general conditions';
 
-Original Query: "${originalQuery}"
+  const prompt = `
+**Objective:** Provide an expert analysis for the search query, synthesizing the provided data into a coherent narrative.
 
-Parsed Analysis: ${JSON.stringify(queryAnalysis, null, 2)}
+**Original Query:** "${originalQuery}"
 
-Data Summary: ${dataSummary}
+**Parsed Query Context:**
+\`\`\`json
+${JSON.stringify(queryAnalysis, null, 2)}
+\`\`\`
+*The key event to focus on is "${primaryEvent}".*
 
-Provide a comprehensive analysis (400-500 words) that:
-1. Summarizes what the user was looking for
-2. Explains the key findings from the available data
-3. Highlights any patterns, trends, or notable observations
-4. Relates the findings back to the original query context
-5. Suggests additional insights or follow-up investigations
+**Available Data Summary:**
+- ${dataSummary}
 
-Focus on making complex data accessible and meaningful to the user.`;
+---
+
+**Analysis Task (400-500 words):**
+
+As a world-class data analyst, synthesize the available data to address the original query's intent. Structure your response exactly as follows, using markdown for formatting:
+
+### Key Insights
+Begin with a 2-3 sentence executive summary. What are the most critical, non-obvious conclusions you can draw from the intersection of the satellite, weather, and news data regarding the specified event?
+
+### Event Breakdown
+1.  **Event Context:** Based on the query, describe the event in detail.
+2.  **Satellite Evidence:** What do the satellite images reveal about the event's impact on the landscape? (e.g., visible floodwaters, fire scars, changes in vegetation).
+3.  **Weather Corroboration:** How does the historical weather data confirm or add context to the event? (e.g., extreme temperatures during a heatwave, heavy precipitation during a flood).
+4.  **On-the-Ground Perspective:** What do the news headlines and articles tell us about the human and societal impact of the event?
+
+### Cause & Effect Analysis
+Based on the combined data, analyze the likely causal chain. What factors likely led to the event? What were the primary environmental and societal effects observed in the data?
+
+### Conclusion & Further Questions
+Summarize the findings and pose 2-3 insightful follow-up questions for deeper investigation.
+`;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4",
     messages: [
       {
         role: "system",
-        content: "You are an expert data analyst specializing in satellite imagery, weather patterns, and geopolitical events. Provide clear, insightful analysis that connects different data sources to answer user questions."
+        content: "You are a world-class data analyst and synthesist. Your expertise is in connecting disparate sources of information—satellite imagery, weather patterns, and geopolitical news—and inferring causal relationships to form a single, coherent narrative. Your tone is that of a confident expert providing a briefing: analytical, insightful, and direct. You NEVER refer to the 'user' or the person asking the question. You address the query's intent by delivering a structured analysis with key insights, an event breakdown, and cause-and-effect analysis, following the user's requested format precisely."
       },
       {
         role: "user",
         content: prompt
       }
     ],
-    temperature: 0.3,
+    temperature: 0.4,
     max_tokens: 800
   });
 

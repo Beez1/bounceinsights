@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { EyeIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 
 const ImageCard = ({ 
   imageUrl, 
   title, 
   description, 
   date,
-  onExplain,
-  onContextualize,
+  onView,
+  onAddToCompare,
   metadata = {}
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -18,7 +18,7 @@ const ImageCard = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="aspect-square relative">
+      <div className="aspect-square relative cursor-pointer" onClick={() => onView(imageUrl)}>
         <img 
           src={imageUrl} 
           alt={title}
@@ -27,20 +27,16 @@ const ImageCard = ({
         
         {/* Hover Overlay */}
         <div className={`absolute inset-0 bg-black/50 flex items-center justify-center gap-4 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-          {onExplain && (
+          {onAddToCompare && (
             <button
-              onClick={onExplain}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent triggering the onView handler on the parent div
+                onAddToCompare({ imageUrl, title, date });
+              }}
               className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              title="Add to Compare"
             >
-              <EyeIcon className="w-6 h-6 text-white" />
-            </button>
-          )}
-          {onContextualize && (
-            <button
-              onClick={onContextualize}
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <InformationCircleIcon className="w-6 h-6 text-white" />
+              <PlusCircleIcon className="w-8 h-8 text-white" />
             </button>
           )}
         </div>

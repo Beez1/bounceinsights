@@ -88,7 +88,7 @@ export const explainImage = async (imageUrl) => {
 };
 
 export const compareImages = async (imageUrls) => {
-  const response = await api.post('/compare', { imageUrls });
+  const response = await api.post('/image-comparator', { images: imageUrls });
   return response.data;
 };
 

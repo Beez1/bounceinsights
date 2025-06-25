@@ -94,6 +94,10 @@
     @apply bg-nasa-blue hover:bg-nasa-blue/80 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg;
   }
   
+  .nasa-button-secondary {
+    @apply bg-transparent hover:bg-white/10 border border-white/30 text-white font-medium py-2 px-4 rounded-lg transition-all duration-300;
+  }
+  
   .feature-card {
     @apply space-card p-6 hover:scale-105 transition-all duration-300 cursor-pointer group;
   }

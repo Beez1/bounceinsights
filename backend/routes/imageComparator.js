@@ -187,7 +187,7 @@ router.post('/', async (req, res) => {
 
     // Make OpenAI request with optimized parameters
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-vision-preview',
+      model: 'gpt-4-turbo',
       messages: messages,
       max_tokens: Math.min(1500, 300 * images.length), // Scale tokens with image count
       temperature: 0.5, // Lower temperature for more consistent results
@@ -211,7 +211,7 @@ router.post('/', async (req, res) => {
       analysis,
       timestamp: new Date().toISOString(),
       metadata: {
-        model: 'gpt-4-vision-preview',
+        model: 'gpt-4-turbo',
         tokensUsed: response.usage?.total_tokens || 0,
         processingTimeMs: processingTime,
         imageDetail: images.length > 2 ? 'low' : 'high'

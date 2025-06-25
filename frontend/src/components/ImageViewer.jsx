@@ -1,62 +1,77 @@
-import { XMarkIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
-export default function ImageViewer({ image, onClose }) {
-  if (!image) return null;
+const ImageViewer = ({ imageUrl, onClose }) => {
+  if (!imageUrl) return null;
 
-  const handleDownload = async (e) => {
-    e.preventDefault();
+  // Since the backend might use different image sources, we can't guarantee a clean filename.
+  // We'll create a generic one based on the image identifier if possible.
+  const getFilename = () => {
     try {
-      const response = await fetch(image.imageUrl);
+      const url = new URL(imageUrl);
+      // Example EPIC URL: /EPIC/archive/natural/2023/11/05/png/epic_1b_20231105001726.png
+      const parts = url.pathname.split('/');
+      const filename = parts[parts.length - 1];
+      // A simple check to see if it looks like a filename
+      return filename.includes('.') ? filename : 'download.jpg';
+    } catch (e) {
+      return 'download.jpg';
+    }
+  }
+
+  const handleDownload = async () => {
+    try {
+      // Use fetch to get the image as a blob
+      const response = await fetch(imageUrl);
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `epic-${image.date?.split(' ')[0] || 'image'}.jpg`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      
+      // Create a temporary link to trigger the download
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = getFilename();
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
-      console.error("Failed to download image directly:", error);
-      // Fallback to opening in a new tab if direct download fails
-      window.open(image.imageUrl, '_blank');
+      console.error("Download failed:", error);
+      // As a fallback, open the image in a new tab so the user can save it manually.
+      window.open(imageUrl, '_blank');
     }
   };
 
   return (
     <div 
-      className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 transition-opacity duration-300"
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity"
       onClick={onClose}
     >
       <div 
-        className="relative bg-gray-900/70 backdrop-blur-md rounded-lg max-w-4xl max-h-[90vh] w-full p-4 md:p-6 overflow-auto"
-        onClick={(e) => e.stopPropagation()}
+        className="relative max-w-4xl max-h-[90vh] w-full p-4"
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking on the image/modal content
       >
-        <div className="space-y-4">
-          <div className="relative">
-            <img src={image.imageUrl} alt={image.caption} className="w-full h-auto object-contain rounded-lg max-h-[70vh]" />
-            <button onClick={onClose} className="absolute -top-2 -right-2 text-white/70 hover:text-white bg-gray-800 rounded-full p-1">
-              <XMarkIcon className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-bold text-white">{image.caption}</h3>
-            <p className="text-sm text-white/60">{new Date(image.date).toLocaleString()}</p>
-          </div>
-
-          <div className="flex space-x-4 pt-2">
-            <a
-              href={image.imageUrl}
-              onClick={handleDownload}
-              className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors w-full sm:w-auto"
-            >
-              <ArrowDownTrayIcon className="w-5 h-5" />
-              <span>Download</span>
-            </a>
-          </div>
+        <div className="absolute top-4 right-4 flex gap-2">
+          <button
+            onClick={handleDownload}
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            title="Download Image"
+          >
+            <ArrowDownTrayIcon className="w-6 h-6 text-white" />
+          </button>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            title="Close Viewer"
+          >
+            <XMarkIcon className="w-6 h-6 text-white" />
+          </button>
         </div>
+        
+        <img
+          src={imageUrl}
+          alt="Full screen view"
+          className="w-full h-full object-contain rounded-lg shadow-2xl"
+        />
       </div>
     </div>
   );
-} 
+};
+
+export default ImageViewer; 
