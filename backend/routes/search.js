@@ -691,21 +691,21 @@ ${JSON.stringify(queryAnalysis, null, 2)}
 
 **Analysis Task (400-500 words):**
 
-As a world-class data analyst, synthesize the available data to address the original query's intent. Structure your response exactly as follows, using markdown for formatting:
+As a world-class data analyst, synthesize the available data to address the original query's intent. Structure your response as plain text. Do not use any markdown formatting like '###' or '**'.
 
-### Key Insights
+Key Insights
 Begin with a 2-3 sentence executive summary. What are the most critical, non-obvious conclusions you can draw from the intersection of the satellite, weather, and news data regarding the specified event?
 
-### Event Breakdown
-1.  **Event Context:** Based on the query, describe the event in detail.
-2.  **Satellite Evidence:** What do the satellite images reveal about the event's impact on the landscape? (e.g., visible floodwaters, fire scars, changes in vegetation).
-3.  **Weather Corroboration:** How does the historical weather data confirm or add context to the event? (e.g., extreme temperatures during a heatwave, heavy precipitation during a flood).
-4.  **On-the-Ground Perspective:** What do the news headlines and articles tell us about the human and societal impact of the event?
+Event Breakdown
+1.  Event Context: Based on the query, describe the event in detail.
+2.  Satellite Evidence: What do the satellite images reveal about the event's impact on the landscape? (e.g., visible floodwaters, fire scars, changes in vegetation).
+3.  Weather Corroboration: How does the historical weather data confirm or add context to the event? (e.g., extreme temperatures during a heatwave, heavy precipitation during a flood).
+4.  On-the-Ground Perspective: What do the news headlines and articles tell us about the human and societal impact of the event?
 
-### Cause & Effect Analysis
+Cause & Effect Analysis
 Based on the combined data, analyze the likely causal chain. What factors likely led to the event? What were the primary environmental and societal effects observed in the data?
 
-### Conclusion & Further Questions
+Conclusion & Further Questions
 Summarize the findings and pose 2-3 insightful follow-up questions for deeper investigation.
 `;
 
@@ -714,7 +714,7 @@ Summarize the findings and pose 2-3 insightful follow-up questions for deeper in
     messages: [
       {
         role: "system",
-        content: "You are a world-class data analyst and synthesist. Your expertise is in connecting disparate sources of information—satellite imagery, weather patterns, and geopolitical news—and inferring causal relationships to form a single, coherent narrative. Your tone is that of a confident expert providing a briefing: analytical, insightful, and direct. You NEVER refer to the 'user' or the person asking the question. You address the query's intent by delivering a structured analysis with key insights, an event breakdown, and cause-and-effect analysis, following the user's requested format precisely."
+        content: "You are a world-class data analyst and synthesist. Your expertise is in connecting disparate sources of information—satellite imagery, weather patterns, and geopolitical news—and inferring causal relationships to form a single, coherent narrative. Your tone is that of a confident expert providing a briefing: analytical, insightful, and direct. You NEVER refer to the 'user' or the person asking the question. You generate plain text only, without any markdown formatting like '###' or '**'."
       },
       {
         role: "user",

@@ -15,43 +15,23 @@ const openai = new OpenAI({
 // Cache for prompt templates to avoid recreation
 const PROMPT_TEMPLATES = {
   satellite: {
-    system: 'You are an expert satellite imagery analyst. Compare these satellite images and provide detailed analysis.',
-    prompt: (focusAreas) => `Compare these satellite images and analyze:
-1. Geographic features and changes
-2. Environmental conditions
-3. Urban development or land use changes
-4. Weather patterns visible
-5. Any notable differences or similarities
+    system: 'You are an expert satellite imagery analyst. Compare these satellite images and provide a detailed analysis in plain text, without any markdown formatting.',
+    prompt: (focusAreas) => `Compare these satellite images by analyzing geographic features, environmental conditions, urban development, land use changes, and weather patterns. Note any significant differences or similarities.
 ${focusAreas.length > 0 ? `Focus particularly on: ${focusAreas.join(', ')}` : ''}`
   },
   weather: {
-    system: 'You are a meteorological expert. Analyze these images for weather-related comparisons.',
-    prompt: (focusAreas) => `Compare these images focusing on weather patterns:
-1. Cloud formations and types
-2. Atmospheric conditions
-3. Precipitation indicators
-4. Seasonal differences
-5. Climate-related changes
+    system: 'You are a meteorological expert. Analyze these images for weather-related comparisons in plain text, without any markdown formatting.',
+    prompt: (focusAreas) => `Compare these images focusing on weather patterns, including cloud formations, atmospheric conditions, and indicators of precipitation or climate changes.
 ${focusAreas.length > 0 ? `Pay special attention to: ${focusAreas.join(', ')}` : ''}`
   },
   temporal: {
-    system: 'You are a temporal analysis expert. Compare these images to identify changes over time.',
-    prompt: (focusAreas) => `Analyze these images for temporal changes:
-1. What has changed between the images?
-2. Evidence of progression or development
-3. Seasonal or time-based differences
-4. Growth, decay, or transformation patterns
-5. Timeline implications
+    system: 'You are a temporal analysis expert. Compare these images to identify changes over time. Provide the analysis in plain text, without any markdown formatting.',
+    prompt: (focusAreas) => `Analyze these images for temporal changes. Describe what has changed, any evidence of progression or development, seasonal differences, and any patterns of growth, decay, or transformation.
 ${focusAreas.length > 0 ? `Focus on changes in: ${focusAreas.join(', ')}` : ''}`
   },
   general: {
-    system: 'You are an expert image analyst. Provide a comprehensive comparison of these images.',
-    prompt: (focusAreas) => `Compare and analyze these images:
-1. Visual similarities and differences
-2. Key features in each image
-3. Quality and composition analysis
-4. Content and subject matter comparison
-5. Overall assessment and insights
+    system: 'You are an expert image analyst. Provide a comprehensive comparison of these images in plain text, without any markdown formatting.',
+    prompt: (focusAreas) => `Compare and analyze these images, discussing visual similarities and differences, key features, content, and subject matter to provide an overall assessment.
 ${focusAreas.length > 0 ? `Give special attention to: ${focusAreas.join(', ')}` : ''}`
   }
 };

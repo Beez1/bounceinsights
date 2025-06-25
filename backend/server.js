@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // Routes
 const apodRoute = require('./routes/apod');
@@ -16,6 +16,8 @@ const emailBriefingRoute = require('./routes/emailBriefing');
 const imageComparatorRoute = require('./routes/imageComparator');
 const timeTravelRoute = require('./routes/timeTravel');
 const searchRoute = require('./routes/search');
+const explainRoute = require('./routes/explain');
+const visionRoute = require('./routes/vision');
 
 app.use('/apod', apodRoute);
 app.use('/epic', epicRoute);
@@ -25,6 +27,8 @@ app.use('/email-briefing', emailBriefingRoute);
 app.use('/image-comparator', imageComparatorRoute);
 app.use('/time-travel', timeTravelRoute);
 app.use('/search', searchRoute);
+app.use('/explain', explainRoute);
+app.use('/vision', visionRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Tab } from '@headlessui/react';
 import { 
   MagnifyingGlassIcon, 
@@ -12,7 +12,7 @@ import ImageCard from '../components/ImageCard';
 import ImageViewer from '../components/ImageViewer';
 import Loader from '../components/Loader';
 import ErrorAlert from '../components/ErrorAlert';
-import { searchImages, compareImages } from '../hooks/useApi';
+import { searchImages, compareImages, explainImage } from '../hooks/useApi';
 
 const tabs = [
   { name: 'Search', icon: MagnifyingGlassIcon },
@@ -49,9 +49,12 @@ export default function SearchAnalyzePage() {
   const [explanation, setExplanation] = useState('');
   const [comparisonResult, setComparisonResult] = useState(null);
   const [displayedHints, setDisplayedHints] = useState([]);
+  const [uploadedImage, setUploadedImage] = useState(null);
 
   const [viewingImage, setViewingImage] = useState(null);
   const [imagesToCompare, setImagesToCompare] = useState([]);
+
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     // Shuffle hints and pick a few to display
@@ -112,16 +115,38 @@ export default function SearchAnalyzePage() {
     }
   };
 
-  const handleExplain = async () => {
-    if (!viewingImage) return;
+  const handleExplain = async (imageUrl) => {
+    if (!imageUrl) return;
     setLoading(true);
     setError(null);
+    setExplanation('');
     try {
-      console.log("Explain functionality not implemented yet.");
+      const result = await explainImage(imageUrl);
+      if (result.success) {
+        setExplanation(result.explanation);
+      } else {
+        setError(result.details || 'Explanation failed.');
+      }
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.details || err.message || 'An error occurred during explanation.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImage(reader.result);
+        // Automatically trigger explanation for the uploaded image
+        // This assumes the backend can handle a base64 data URL
+        // or that we'd upload it and get a URL.
+        // For now, let's call handleExplain with the data URL.
+        handleExplain(reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -285,20 +310,49 @@ export default function SearchAnalyzePage() {
                     <h3 className="text-lg font-semibold text-white mb-4">
                       Upload or Select an Image to Explain
                     </h3>
-                    <div className="border-2 border-dashed border-white/20 rounded-lg p-8 text-center">
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept="image/*"
-                        onChange={(e) => {/* Handle file upload */}}
-                      />
-                      <button className="nasa-button">
-                        Upload Image
-                      </button>
-                      <p className="mt-2 text-sm text-white/60">
-                        or drag and drop an image here
-                      </p>
-                    </div>
+                    {uploadedImage ? (
+                      <div className="relative">
+                        <img src={uploadedImage} alt="Uploaded for explanation" className="w-full h-auto max-h-96 object-contain rounded-lg" />
+                        <button
+                          onClick={() => {
+                            setUploadedImage(null);
+                            setExplanation('');
+                          }}
+                          className="absolute top-2 right-2 p-1 bg-red-600/80 rounded-full hover:bg-red-500"
+                          title="Remove Image"
+                        >
+                          <XCircleIcon className="w-6 h-6 text-white" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div 
+                        className="border-2 border-dashed border-white/20 rounded-lg p-8 text-center"
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                            handleFileSelect({ target: { files: e.dataTransfer.files }});
+                          }
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                      >
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleFileSelect}
+                        />
+                        <button 
+                          onClick={() => fileInputRef.current.click()}
+                          className="nasa-button"
+                        >
+                          Upload Image
+                        </button>
+                        <p className="mt-2 text-sm text-white/60">
+                          or drag and drop an image here
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* AI Analysis Results */}
@@ -313,7 +367,12 @@ export default function SearchAnalyzePage() {
                         <p>Upload an image to get an AI-powered explanation.</p>
                       </div>
                     )}
-                    {explanation && <p className="text-white bg-white/5 p-4 rounded-lg">{explanation}</p>}
+                    {explanation && (
+                      <div
+                        className="prose prose-invert max-w-none text-white/90 bg-white/5 p-4 rounded-lg"
+                        dangerouslySetInnerHTML={{ __html: explanation.replace(/\n/g, '<br />') }}
+                      />
+                    )}
                   </div>
                 </div>
               </Tab.Panel>

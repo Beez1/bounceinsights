@@ -105,4 +105,9 @@ export const getContextualInfo = async (location) => {
 export const sendEmailBriefing = async (email, preferences) => {
   const response = await api.post('/briefing', { email, preferences });
   return response.data;
+};
+
+export const detectCountries = async (imageUrl) => {
+  const response = await api.post('/vision/detect-countries', { imageUrl });
+  return response.data;
 }; 

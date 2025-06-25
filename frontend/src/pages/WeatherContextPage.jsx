@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
-import { CloudIcon, GlobeAltIcon, NewspaperIcon } from '@heroicons/react/24/outline';
+import { useState, useEffect, useRef } from 'react';
+import { CloudIcon, GlobeAltIcon, NewspaperIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import MapPicker from '../components/MapPicker';
 import Loader from '../components/Loader';
 import ErrorAlert from '../components/ErrorAlert';
-import { getWeatherSummary, getContextualInfo } from '../hooks/useApi';
+import { getWeatherSummary, getContextualInfo, detectCountries } from '../hooks/useApi';
 
 export default function WeatherContextPage() {
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [detectedLocation, setDetectedLocation] = useState(null);
+  
+  const fileInputRef = useRef(null);
 
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState(null);
@@ -48,6 +52,33 @@ export default function WeatherContextPage() {
     }
   }, [location]);
 
+  const handleFileSelect = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setLoading(true);
+    setUploadedImage(URL.createObjectURL(file));
+
+    try {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const result = await detectCountries(reader.result);
+        if (result.success && result.countries.length > 0) {
+          const country = result.countries[0];
+          setDetectedLocation(country);
+          setLocation({ name: country }); // Trigger data fetching
+        } else {
+          setWeatherError("Could not detect a location from the image.");
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setWeatherError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-12 mt-16">
       <div className="max-w-7xl mx-auto">
@@ -77,20 +108,56 @@ export default function WeatherContextPage() {
               <h3 className="text-lg font-semibold text-white mb-4">
                 Upload Satellite Image
               </h3>
-              <div className="border-2 border-dashed border-white/20 rounded-lg p-8 text-center">
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={(e) => {/* Handle file upload */}}
-                />
-                <button className="nasa-button">
-                  Upload Image
-                </button>
-                <p className="mt-2 text-sm text-white/60">
-                  or drag and drop an image here
-                </p>
-              </div>
+              {uploadedImage ? (
+                <div className="relative">
+                  <img src={uploadedImage} alt="Uploaded for context" className="w-full h-auto max-h-64 object-contain rounded-lg" />
+                  <button
+                    onClick={() => {
+                      setUploadedImage(null);
+                      setDetectedLocation(null);
+                      setWeatherData(null);
+                      setContextData(null);
+                    }}
+                    className="absolute top-2 right-2 p-1 bg-red-600/80 rounded-full hover:bg-red-500"
+                    title="Remove Image"
+                  >
+                    <XCircleIcon className="w-6 h-6 text-white" />
+                  </button>
+                  {detectedLocation && (
+                    <div className="mt-2 text-center text-sm text-white/80">
+                      Detected Location: <span className="font-semibold">{detectedLocation}</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div 
+                  className="border-2 border-dashed border-white/20 rounded-lg p-8 text-center"
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                      handleFileSelect({ target: { files: e.dataTransfer.files }});
+                    }
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                  />
+                  <button 
+                    onClick={() => fileInputRef.current.click()}
+                    className="nasa-button"
+                  >
+                    Upload Image
+                  </button>
+                  <p className="mt-2 text-sm text-white/60">
+                    or drag and drop an image here
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -102,11 +169,11 @@ export default function WeatherContextPage() {
                 Weather Analysis
               </h3>
               
-              {weatherLoading && <Loader />}
+              {(loading || weatherLoading) && <Loader />}
               {weatherError && <ErrorAlert message={weatherError} />}
-              {!weatherLoading && !weatherData && (
+              {!weatherLoading && !weatherData && !loading && (
                 <div className="text-center text-white/60 py-12">
-                  <p>Select a location on the map to view weather analysis.</p>
+                  <p>Select a location on the map or upload an image to view weather analysis.</p>
                 </div>
               )}
               {weatherData && (
