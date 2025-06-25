@@ -5,6 +5,22 @@ import Loader from '../components/Loader';
 import ErrorAlert from '../components/ErrorAlert';
 import { getWeatherSummary, getContextualInfo, detectCountries } from '../hooks/useApi';
 
+const getWeatherVisuals = (weatherString) => {
+  if (!weatherString) return { emoji: '🤷', color: 'bg-gray-500/10' };
+
+  const description = weatherString.trim().toLowerCase();
+
+  if (description.includes('clear')) return { emoji: '☀️', color: 'bg-yellow-400/20' };
+  if (description.includes('partly cloudy')) return { emoji: '⛅️', color: 'bg-blue-300/20' };
+  if (description.includes('overcast')) return { emoji: '☁️', color: 'bg-gray-400/20' };
+  if (description.includes('fog')) return { emoji: '🌫️', color: 'bg-gray-500/20' };
+  if (description.includes('drizzle') || description.includes('rain')) return { emoji: '🌧️', color: 'bg-blue-500/20' };
+  if (description.includes('snow') || description.includes('freezing')) return { emoji: '❄️', color: 'bg-cyan-300/20' };
+  if (description.includes('thunderstorm')) return { emoji: '⛈️', color: 'bg-purple-600/20' };
+
+  return { emoji: '🌎', color: 'bg-white/5' }; // Default
+};
+
 export default function WeatherContextPage() {
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(null);
@@ -178,41 +194,56 @@ export default function WeatherContextPage() {
               )}
               {weatherData && (
                 <div className="space-y-4">
-                  {/* Weather Stats */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="text-sm text-white/70">Temperature</div>
-                      <div className="text-2xl font-semibold text-white">
-                        {/* Temperature data */}
-                      </div>
-                    </div>
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="text-sm text-white/70">UV Index</div>
-                      <div className="text-2xl font-semibold text-white">
-                        {/* UV data */}
-                      </div>
-                    </div>
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="text-sm text-white/70">Cloud Cover</div>
-                      <div className="text-2xl font-semibold text-white">
-                        {/* Cloud data */}
-                      </div>
-                    </div>
-                    <div className="bg-white/5 rounded-lg p-4">
-                      <div className="text-sm text-white/70">Precipitation</div>
-                      <div className="text-2xl font-semibold text-white">
-                        {/* Precipitation data */}
-                      </div>
-                    </div>
-                  </div>
+                  {(() => {
+                    const weatherString = weatherData.regions?.[0]?.weather;
+                    if (!weatherString) {
+                      return <p className="text-center text-white/60">Weather data not available.</p>;
+                    }
 
-                  {/* Forecast */}
-                  <div className="mt-6">
-                    <h4 className="text-sm font-medium text-white/70 mb-3">
-                      5-Day Forecast
-                    </h4>
-                    {/* Forecast content */}
-                  </div>
+                    const tempMatch = weatherString.match(/High: ([\d.-]+)°C/);
+                    const temp = tempMatch ? tempMatch[1] : 'N/A';
+                    const uvMatch = weatherString.match(/UV Index ([\d.-]+)/);
+                    const uv = uvMatch ? uvMatch[1] : 'N/A';
+                    const condition = weatherString.split(',')[2]?.trim() || 'N/A';
+                    const country = weatherData.regions?.[0]?.country || 'N/A';
+                    
+                    const weatherVisuals = getWeatherVisuals(condition);
+
+                    return (
+                      <div className="space-y-4">
+                        <div className={`text-6xl text-center p-4 rounded-lg ${weatherVisuals.color}`}>
+                          {weatherVisuals.emoji}
+                        </div>
+                        {/* Weather Stats */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-blue-400/10 rounded-lg p-4">
+                            <div className="text-sm text-white/70">Temperature</div>
+                            <div className="text-2xl font-semibold text-white">
+                              {temp}°C
+                            </div>
+                          </div>
+                          <div className="bg-orange-400/10 rounded-lg p-4">
+                            <div className="text-sm text-white/70">UV Index</div>
+                            <div className="text-2xl font-semibold text-white">
+                              {uv}
+                            </div>
+                          </div>
+                          <div className="bg-purple-400/10 rounded-lg p-4">
+                            <div className="text-sm text-white/70">Weather</div>
+                            <div className="text-xl font-semibold text-white">
+                              {condition}
+                            </div>
+                          </div>
+                          <div className="bg-green-400/10 rounded-lg p-4">
+                            <div className="text-sm text-white/70">Country</div>
+                            <div className="text-xl font-semibold text-white">
+                              {country}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>
@@ -240,7 +271,10 @@ export default function WeatherContextPage() {
                     <h4 className="text-sm font-medium text-white/70 mb-2">
                       Country Information
                     </h4>
-                    {/* Country details */}
+                    <div className="bg-indigo-500/10 rounded-lg p-4 text-sm text-white">
+                      <p><strong>Country:</strong> {contextData.contextualData?.[0]?.country}</p>
+                      <p><strong>Capital:</strong> {contextData.contextualData?.[0]?.capital}</p>
+                    </div>
                   </div>
 
                   {/* Capital Weather */}
@@ -248,7 +282,9 @@ export default function WeatherContextPage() {
                     <h4 className="text-sm font-medium text-white/70 mb-2">
                       Capital City Weather
                     </h4>
-                    {/* Capital weather details */}
+                    <div className="bg-sky-500/10 rounded-lg p-4 text-sm text-white">
+                     {contextData.contextualData?.[0]?.weather}
+                    </div>
                   </div>
 
                   {/* Recent News */}
@@ -256,7 +292,14 @@ export default function WeatherContextPage() {
                     <h4 className="text-sm font-medium text-white/70 mb-2">
                       Recent News
                     </h4>
-                    {/* News items */}
+                    <ul className="space-y-2">
+                      {contextData.contextualData?.[0]?.news.slice(0, 3).map((item, index) => (
+                        <li key={index} className="bg-teal-500/10 rounded-lg p-3 text-sm hover:bg-teal-500/20 transition-colors">
+                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-white font-medium">{item.title}</a>
+                          <p className="text-white/60 text-xs">{item.source}</p>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               )}

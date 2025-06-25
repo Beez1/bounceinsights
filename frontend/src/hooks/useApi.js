@@ -93,7 +93,7 @@ export const compareImages = async (imageUrls) => {
 };
 
 export const getWeatherSummary = async (location) => {
-  const response = await api.post('/weather', { location });
+  const response = await api.post('/weather-summary', { location });
   return response.data;
 };
 
