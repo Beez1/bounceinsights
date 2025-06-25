@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { CloudIcon, GlobeAltIcon, NewspaperIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { CloudIcon, GlobeAltIcon, NewspaperIcon, XCircleIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import MapPicker from '../components/MapPicker';
 import Loader from '../components/Loader';
 import ErrorAlert from '../components/ErrorAlert';
-import { getWeatherSummary, getContextualInfo, detectCountries } from '../hooks/useApi';
+import EmailDialog from '../components/EmailDialog';
+import toast from 'react-hot-toast';
+import { getWeatherSummary, getContextualInfo, detectCountries, sendWeatherEmailToUser } from '../hooks/useApi';
 
 const getWeatherVisuals = (weatherString) => {
   if (!weatherString) return { emoji: '🤷', color: 'bg-gray-500/10' };
@@ -27,6 +29,8 @@ export default function WeatherContextPage() {
   const [weatherData, setWeatherData] = useState(null);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [detectedLocation, setDetectedLocation] = useState(null);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+  const [email, setEmail] = useState('');
   
   const fileInputRef = useRef(null);
 
@@ -67,6 +71,23 @@ export default function WeatherContextPage() {
       fetchAllData();
     }
   }, [location]);
+
+  const handleSendWeatherEmail = async () => {
+    if (!weatherData || !location) return;
+    try {
+      const weatherPayload = {
+        location: location.name,
+        summary: weatherData.regions?.[0]?.weather || 'Not available'
+      };
+      await sendWeatherEmailToUser(email, weatherPayload);
+      toast.success(`Weather summary for ${location.name} sent successfully!`);
+    } catch (err) {
+      toast.error(err.response?.data?.details || 'Failed to send email.');
+    } finally {
+      setIsEmailDialogOpen(false);
+      setEmail('');
+    }
+  };
 
   const handleFileSelect = async (event) => {
     const file = event.target.files[0];
@@ -241,6 +262,13 @@ export default function WeatherContextPage() {
                             </div>
                           </div>
                         </div>
+                        <button
+                          onClick={() => setIsEmailDialogOpen(true)}
+                          className="w-full mt-4 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                          <PaperAirplaneIcon className="w-5 h-5 mr-2" />
+                          Send Summary to Email
+                        </button>
                       </div>
                     );
                   })()}
@@ -307,6 +335,13 @@ export default function WeatherContextPage() {
           </div>
         </div>
       </div>
+      <EmailDialog
+        isOpen={isEmailDialogOpen}
+        onClose={() => setIsEmailDialogOpen(false)}
+        onSend={handleSendWeatherEmail}
+        email={email}
+        setEmail={setEmail}
+      />
     </div>
   );
 } 

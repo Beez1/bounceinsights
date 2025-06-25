@@ -110,4 +110,14 @@ export const sendEmailBriefing = async (email, preferences) => {
 export const detectCountries = async (imageUrl) => {
   const response = await api.post('/vision/detect-countries', { imageUrl });
   return response.data;
+};
+
+export const sendApodEmailToUser = async (email, apodData) => {
+  const response = await api.post('/send-email/apod', { email, apodData });
+  return response.data;
+};
+
+export const sendWeatherEmailToUser = async (email, weatherData) => {
+  const response = await api.post('/send-email/weather', { email, weatherData });
+  return response.data;
 }; 

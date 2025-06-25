@@ -18,6 +18,7 @@ const timeTravelRoute = require('./routes/timeTravel');
 const searchRoute = require('./routes/search');
 const explainRoute = require('./routes/explain');
 const visionRoute = require('./routes/vision');
+const sendEmailRoute = require('./routes/sendEmail');
 
 app.use('/apod', apodRoute);
 app.use('/epic', epicRoute);
@@ -29,6 +30,7 @@ app.use('/time-travel', timeTravelRoute);
 app.use('/search', searchRoute);
 app.use('/explain', explainRoute);
 app.use('/vision', visionRoute);
+app.use('/send-email', sendEmailRoute);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

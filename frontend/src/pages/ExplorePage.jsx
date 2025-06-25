@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Tab } from '@headlessui/react';
-import { CalendarIcon, GlobeAltIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { CalendarIcon, GlobeAltIcon, ClockIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import { useApi } from '../hooks/useApi';
 import EpicViewPage from './EpicViewPage';
 import TimeTravelPage from './TimeTravelPage';
+import EmailDialog from '../components/EmailDialog';
+import { sendApodEmailToUser } from '../hooks/useApi';
+import toast from 'react-hot-toast';
 
 const tabs = [
   { name: 'Astronomy', icon: CalendarIcon, endpoint: '/apod' },
@@ -13,8 +16,24 @@ const tabs = [
 
 export default function ExplorePage() {
   const [activeTab, setActiveTab] = useState(0);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
+  const [email, setEmail] = useState('');
+
   const currentTab = tabs[activeTab];
   const { data, loading, error } = useApi(currentTab.endpoint || null);
+
+  const handleSendApodEmail = async () => {
+    if (!data) return;
+    try {
+      await sendApodEmailToUser(email, data);
+      toast.success('Astronomy Picture of the Day sent successfully!');
+    } catch (err) {
+      toast.error(err.response?.data?.details || 'Failed to send email.');
+    } finally {
+      setIsEmailDialogOpen(false);
+      setEmail('');
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-12 mt-16">
@@ -69,6 +88,13 @@ export default function ExplorePage() {
                       />
                     )}
                     <p className="text-white/80">{data.explanation}</p>
+                    <button
+                      onClick={() => setIsEmailDialogOpen(true)}
+                      className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                      <PaperAirplaneIcon className="w-5 h-5 mr-2" />
+                      Send to Email
+                    </button>
                   </div>
                 ) : (
                   <p>No APOD data found.</p>
@@ -84,6 +110,13 @@ export default function ExplorePage() {
           </Tab.Panels>
         </Tab.Group>
       </div>
+      <EmailDialog
+        isOpen={isEmailDialogOpen}
+        onClose={() => setIsEmailDialogOpen(false)}
+        onSend={handleSendApodEmail}
+        email={email}
+        setEmail={setEmail}
+      />
     </div>
   );
 } 
