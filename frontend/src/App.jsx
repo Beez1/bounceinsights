@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
@@ -8,18 +8,16 @@ import WeatherContextPage from './pages/WeatherContextPage';
 
 const App = () => {
   return (
-    <Router>
-      <div className="min-h-screen bg-background text-foreground">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/search-analyze" element={<SearchAnalyzePage />} />
-          <Route path="/weather-context" element={<WeatherContextPage />} />
-        </Routes>
-        <Toaster position="bottom-right" />
-      </div>
-    </Router>
+    <div className="min-h-screen bg-background text-foreground">
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/search-analyze" element={<SearchAnalyzePage />} />
+        <Route path="/weather-context" element={<WeatherContextPage />} />
+      </Routes>
+      <Toaster position="bottom-right" />
+    </div>
   );
 };
 
